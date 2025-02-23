@@ -13,4 +13,16 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\Interfaces\" />
+    <Folder Include="Core\Models\" />
+    <Folder Include="Core\Services\" />
+    <Folder Include="Discord\Commands\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\workflows\build.yml" />
+    <None Include=".github\workflows\publish.yml" />
+  </ItemGroup>
+
 </Project>
