@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, CommandInteraction, codeBlock } from "discord.js";
-import { LostSectorAPI } from "../api/lostsector";
+import { SlashCommandBuilder, CommandInteraction, MessageFlags } from "discord.js";
+import { createSectorComponents } from "../helpers/embed";
 
 export const data = new SlashCommandBuilder()
   .setName("current")
@@ -8,9 +8,10 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();
   try {
-    const current = await LostSectorAPI.fetchCurrent();
+    const components = await createSectorComponents();
     await interaction.editReply({
-      content: codeBlock("json", JSON.stringify(current, null, 2)),
+      flags: MessageFlags.IsComponentsV2,
+      components: components,
     });
   } catch (err) {
     console.error(err);

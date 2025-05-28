@@ -36,7 +36,7 @@ const uppercaseEmojis = [
  * @param inputName The user-friendly name to look up.
  * @returns The formatted emote string, or the original input if not found.
  */
-export function getEmoji(inputName: string): string {
+export function getEmoteString(inputName: string): string {
   const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
   if (!guild) return inputName + " (emote server not found)";
 

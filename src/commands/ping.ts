@@ -1,5 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { getEmoji } from "../helpers/emoji";
+import { getEmoteString } from "../helpers/emotes";
 
 export const data = new SlashCommandBuilder()
   .setName("ping")
@@ -10,7 +10,7 @@ export async function execute(interaction: CommandInteraction) {
     return interaction.reply("No guild found");
   }
   let response = "Testing emojis:\n";
-  response += "twitter: " + getEmoji("twitter") + "\n";
-  response += "discord: " + getEmoji("discord") + "\n";
+  response += "twitter: " + getEmoteString("twitter") + "\n";
+  response += "discord: " + getEmoteString("discord") + "\n";
   return interaction.reply(response);
 }
