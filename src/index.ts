@@ -1,7 +1,6 @@
 import { Client, GatewayIntentBits, Events, Collection } from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
-import { deployCommands } from "./deploy-commands";
 import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 const client = new Client({
@@ -27,14 +26,6 @@ for (const commandName in commandModules) {
 
 client.once(Events.ClientReady, () => {
   console.log(`Bot is connected as ${client.user!.tag}!`);
-
-  deployCommands()
-    .then(() => {
-      console.log("Registered commands successfully!");
-    })
-    .catch((error) => {
-      console.error("Failed to register commands:", error);
-    });
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {

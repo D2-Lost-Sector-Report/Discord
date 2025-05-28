@@ -5,11 +5,51 @@ import { commands } from "./commands";
 const commandsData = Object.values(commands).map((command) => command.data);
 
 const rest = new REST().setToken(config.DISCORD_TOKEN);
+const GUILD_ID = "906471158684217374";
 
-export async function deployCommands() {
-  console.log("Started refreshing application (/) commands.");
+async function deleteAllCommands(route: any, scope: string, isGlobal: boolean) {
+  const existing = (await rest.get(route)) as any[];
+  if (existing.length > 0) {
+    console.log(`Deleting ${existing.length} existing ${scope} commands...`);
+    for (const cmd of existing) {
+      const deleteRoute = isGlobal
+        ? Routes.applicationCommand(config.DISCORD_CLIENT_ID, cmd.id)
+        : Routes.applicationGuildCommand(
+            config.DISCORD_CLIENT_ID,
+            GUILD_ID,
+            cmd.id
+          );
+      await rest.delete(deleteRoute);
+    }
+    console.log(`All existing ${scope} commands deleted.`);
+  } else {
+    console.log(`No existing ${scope} commands to delete.`);
+  }
+}
 
-  await rest.put(Routes.applicationCommands(config.DISCORD_CLIENT_ID), {
+async function registerCommands(route: any, commandsData: any, scope: string) {
+  await rest.put(route, {
     body: commandsData,
   });
+  console.log(`Registered new ${scope} commands.`);
+}
+
+export async function deployCommands(mode?: string) {
+  const isProduction = mode === "--prod";
+  if (isProduction) {
+    // Register globally
+    const route = Routes.applicationCommands(config.DISCORD_CLIENT_ID);
+    console.log("--prod flag detected: Registering commands globally.");
+    await deleteAllCommands(route, "global", true);
+    await registerCommands(route, commandsData, "global");
+  } else {
+    // Register to guild only
+    const route = Routes.applicationGuildCommands(
+      config.DISCORD_CLIENT_ID,
+      GUILD_ID
+    );
+    console.log("No --prod flag: Registering commands to guild " + GUILD_ID);
+    await deleteAllCommands(route, "guild", false);
+    await registerCommands(route, commandsData, "guild");
+  }
 }
