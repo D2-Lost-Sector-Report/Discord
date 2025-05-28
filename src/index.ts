@@ -1,14 +1,32 @@
-import { Client } from "discord.js";
+import { Client, GatewayIntentBits, Events, Collection } from "discord.js";
 import { config } from "./config";
-import { commands } from "./commands";
+import { commands as commandModules } from "./commands";
 import { deployCommands } from "./deploy-commands";
+import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 const client = new Client({
-  intents: ["Guilds", "GuildMessages", "DirectMessages"],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+  ],
 });
 
-client.once("ready", () => {
-  console.log("Bot is ready!");
+type CommandModule = {
+  data: SlashCommandBuilder;
+  execute: (interaction: CommandInteraction) => Promise<any>;
+};
+
+const commands = new Collection<string, CommandModule>();
+for (const commandName in commandModules) {
+  if (Object.prototype.hasOwnProperty.call(commandModules, commandName)) {
+    // @ts-expect-error: commandModules is imported as any, but we know the structure
+    commands.set(commandName, commandModules[commandName]);
+  }
+}
+
+client.once(Events.ClientReady, () => {
+  console.log(`Bot is connected as ${client.user!.tag}!`);
 
   deployCommands()
     .then(() => {
@@ -19,13 +37,14 @@ client.once("ready", () => {
     });
 });
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) {
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) {
     return;
   }
   const { commandName } = interaction;
-  if (commands[commandName as keyof typeof commands]) {
-    await commands[commandName as keyof typeof commands].execute(interaction);
+  const command = commands.get(commandName);
+  if (command) {
+    await command.execute(interaction);
   }
 });
 
@@ -37,3 +56,7 @@ client
   .catch((error) => {
     console.error("Failed to log in:", error);
   });
+
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
+});
