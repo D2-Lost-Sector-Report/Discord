@@ -5,7 +5,6 @@ import { commands } from "./commands";
 const commandsData = Object.values(commands).map((command) => command.data);
 
 const rest = new REST().setToken(config.DISCORD_TOKEN);
-const GUILD_ID = "906471158684217374";
 
 async function deleteAllCommands(route: any, scope: string, isGlobal: boolean) {
   const existing = (await rest.get(route)) as any[];
@@ -16,7 +15,7 @@ async function deleteAllCommands(route: any, scope: string, isGlobal: boolean) {
         ? Routes.applicationCommand(config.DISCORD_CLIENT_ID, cmd.id)
         : Routes.applicationGuildCommand(
             config.DISCORD_CLIENT_ID,
-            GUILD_ID,
+            config.DISCORD_GUILD_ID,
             cmd.id
           );
       await rest.delete(deleteRoute);
@@ -46,9 +45,9 @@ export async function deployCommands(mode?: string) {
     // Register to guild only
     const route = Routes.applicationGuildCommands(
       config.DISCORD_CLIENT_ID,
-      GUILD_ID
+      config.DISCORD_GUILD_ID
     );
-    console.log("No --prod flag: Registering commands to guild " + GUILD_ID);
+    console.log("No --prod flag: Registering commands to guild " + config.DISCORD_GUILD_ID);
     await deleteAllCommands(route, "guild", false);
     await registerCommands(route, commandsData, "guild");
   }
