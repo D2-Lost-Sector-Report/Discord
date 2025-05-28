@@ -3,7 +3,7 @@ import { config } from "./config";
 import { commands as commandModules } from "./commands";
 import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
