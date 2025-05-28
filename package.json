@@ -1,0 +1,37 @@
+{
+  "name": "d2ls-discord",
+  "version": "1.0.0",
+  "description": "Discord bot for the D2 Lost Sector Report project.",
+  "homepage": "https://github.com/MoonieGZ/D2LS-Discord#readme",
+  "bugs": {
+    "url": "https://github.com/MoonieGZ/D2LS-Discord/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoonieGZ/D2LS-Discord.git"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "MoonieGZ",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup src/index.ts --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.27.0",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.27.0",
+    "globals": "^16.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "tsup": "^8.5.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
+  }
+}

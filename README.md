@@ -1,2 +1,1 @@
-# Discord
-
+# D2LS-Discord

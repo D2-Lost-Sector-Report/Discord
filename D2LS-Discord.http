@@ -1,6 +1,0 @@
-@D2LS_Discord_HostAddress = http://localhost:5213
-
-GET {{D2LS_Discord_HostAddress}}/health/
-Accept: application/json
-
-###
