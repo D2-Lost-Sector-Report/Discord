@@ -51,11 +51,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const originalTimestamp = interaction.message.createdTimestamp;
     if (originalTimestamp && Date.now() - originalTimestamp > 1000 * 60 * 5) {
       await interaction.reply({
-        content: "This menu has expired, please run the command yourself to manipulate the menu.",
+        content:
+          "This menu has expired, please run the command yourself to manipulate the menu.",
         flags: MessageFlags.Ephemeral,
       });
 
-      await interaction.message.edit({ components: disableSelectMenus(interaction.message.components) });
+      await interaction.message.edit({
+        components: disableSelectMenus(interaction.message.components),
+      });
       return;
     }
 

@@ -20,11 +20,15 @@ import { colors, powerLevel } from "../config";
 
 function getSectorImageUrls(sectorId: string, imageCount: number): string[] {
   const urls = [];
-  for(let i = 1; i <= imageCount; i++) {
-    if(i === 1) {
-      urls.push(`https://cf-assets.d2lostsector.report/for-website/${sectorId}/${sectorId}.jpg?width=800&watermark=true`);
+  for (let i = 1; i <= imageCount; i++) {
+    if (i === 1) {
+      urls.push(
+        `https://cf-assets.d2lostsector.report/for-website/${sectorId}/${sectorId}.jpg?width=800&watermark=true`
+      );
     } else {
-      urls.push(`https://cf-assets.d2lostsector.report/for-website/${sectorId}/${sectorId}-${i-1}.jpg?width=800&watermark=true`);
+      urls.push(
+        `https://cf-assets.d2lostsector.report/for-website/${sectorId}/${sectorId}-${i - 1}.jpg?width=800&watermark=true`
+      );
     }
   }
   return urls;
@@ -61,11 +65,11 @@ export function createSectorPageComponents(
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
           `### Modifiers (Expert [${powerLevel.expert}] | Master [${powerLevel.master}])\n\n` +
-          `**Champions**: ${generateChampionList(sector.champions)}\n` +
-          `**Shields**: ${generateShieldList(sector.shields)}\n` +
-          `**Threat**: ${getEmoteString(sector.threat)}\n` +
-          `**Surges**: ${sector.surges.map((surge) => getEmoteString(surge)).join(" ")}\n` +
-          `**Overcharge**: ${getEmoteString(sector.overcharge)} ${sector.overcharge}`
+            `**Champions**: ${generateChampionList(sector.champions)}\n` +
+            `**Shields**: ${generateShieldList(sector.shields)}\n` +
+            `**Threat**: ${getEmoteString(sector.threat)}\n` +
+            `**Surges**: ${sector.surges.map((surge) => getEmoteString(surge)).join(" ")}\n` +
+            `**Overcharge**: ${getEmoteString(sector.overcharge)} ${sector.overcharge}`
         )
       )
       .addSeparatorComponents(new SeparatorBuilder())
@@ -98,32 +102,41 @@ export function createSectorPageComponents(
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
           `## ${getEmoteString("lostsector")} ${sector.name}\n` +
-          `### Today's Rewards\n\n` +
-          `Weapon drop rates, assuming no Champions are left alive:\n` +
-          `- **Expert**: 70% chance\n` +
-          `- **Master**: 100% chance.\n\n` +
-          `**Master** drops will have double perks in one column.`
+            `### Today's Rewards\n\n` +
+            `Weapon drop rates, assuming no Champions are left alive:\n` +
+            `- **Expert**: 70% chance\n` +
+            `- **Master**: 100% chance.\n\n` +
+            `**Master** drops will have double perks in one column.`
         )
       )
       .addSeparatorComponents(new SeparatorBuilder());
 
-    const rewardSections = (sector.rewards || []).map(({ reward }) => 
+    const rewardSections = (sector.rewards || []).map(({ reward }) =>
       new SectionBuilder()
         .addTextDisplayComponents(
           new TextDisplayBuilder().setContent(`### ${reward.name}`),
           new TextDisplayBuilder().setContent(reward.type),
-          new TextDisplayBuilder().setContent(`[View on Foundry ↗](https://d2foundry.gg/w/${reward.id})`)
+          new TextDisplayBuilder().setContent(
+            `[View on Foundry ↗](https://d2foundry.gg/w/${reward.id})`
+          )
         )
-        .setThumbnailAccessory(new ThumbnailBuilder({ media: { url: getRewardImageUrl(reward.id) } }))
+        .setThumbnailAccessory(
+          new ThumbnailBuilder({ media: { url: getRewardImageUrl(reward.id) } })
+        )
     );
 
-    const rahoolSection = 
-      new SectionBuilder()
-        .addTextDisplayComponents(
-          new TextDisplayBuilder().setContent(`### Rahool's Daily Focus`),
-          new TextDisplayBuilder().setContent(`Today Rahool will focus exotic engrams into **${sector.rahool} armour** for no extra cost.`)
+    const rahoolSection = new SectionBuilder()
+      .addTextDisplayComponents(
+        new TextDisplayBuilder().setContent(`### Rahool's Daily Focus`),
+        new TextDisplayBuilder().setContent(
+          `Today Rahool will focus exotic engrams into **${sector.rahool} armour** for no extra cost.`
         )
-        .setThumbnailAccessory(new ThumbnailBuilder({ media: { url: getRahoolImageUrl(sector.rahool) } }));
+      )
+      .setThumbnailAccessory(
+        new ThumbnailBuilder({
+          media: { url: getRahoolImageUrl(sector.rahool) },
+        })
+      );
 
     containerComponent.addSectionComponents(...rewardSections);
     containerComponent.addSeparatorComponents(new SeparatorBuilder());
