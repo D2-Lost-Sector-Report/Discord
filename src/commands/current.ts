@@ -4,10 +4,7 @@ import {
   MessageFlags,
 } from "discord.js";
 import { LostSectorAPI } from "../api/lostsector";
-import {
-  createSectorPageComponents,
-  createSectorSelectRow,
-} from "../helpers/embed";
+import { buildSectorComponents } from "../helpers/embed";
 
 export const data = new SlashCommandBuilder()
   .setName("current")
@@ -19,10 +16,7 @@ export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();
   try {
     const sector = await LostSectorAPI.fetchCurrent();
-    const components = [
-      ...createSectorPageComponents(sector, "information"),
-      createSectorSelectRow("information"),
-    ];
+    const components = buildSectorComponents(sector, "information");
     await interaction.editReply({
       flags: MessageFlags.IsComponentsV2,
       components,

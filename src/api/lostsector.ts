@@ -17,6 +17,7 @@ export interface LostSector {
   date: string;
   name: string;
   planet: string;
+  imageCount: number;
   champions: any[];
   shields: any[];
   banes: any[];

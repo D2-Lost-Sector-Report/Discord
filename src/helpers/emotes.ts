@@ -3,16 +3,16 @@ import { config } from "../config";
 
 // Map user-friendly names to actual emote names in the server
 const emoteNameMap: Record<string, string> = {
-  sword: "SRD",
+  "sword": "SRD",
   "scout rifle": "ScR",
   "rocket launcher": "RL",
   "grenade launcher": "GL",
-  glaive: "GL",
-  sidearm: "SA",
+  "glaive": "GV",
+  "sidearm": "SA",
   "assault rifle": "AR",
   "pulse rifle": "PR",
   "sniper rifle": "SR",
-  shotgun: "SG",
+  "shotgun": "SG",
   "machine gun": "LMG",
   "submachine gun": "SMG",
   "hand cannon": "HC",
@@ -40,7 +40,7 @@ export function getEmoteString(inputName: string): string {
   const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
   if (!guild) return inputName + " (emote server not found)";
 
-  let emoteName = emoteNameMap[inputName] || inputName;
+  let emoteName = emoteNameMap[inputName.toLowerCase()] || inputName;
 
   if (uppercaseEmojis.includes(emoteName)) {
     emoteName = emoteName.toUpperCase();

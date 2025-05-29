@@ -1,12 +1,15 @@
-import { Client, GatewayIntentBits, Events, Collection, MessageFlags } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  Events,
+  Collection,
+  MessageFlags,
+} from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
 import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { LostSectorAPI } from "./api/lostsector";
-import {
-  createSectorPageComponents,
-  createSectorSelectRow,
-} from "./helpers/embed";
+import { buildSectorComponents, disableSelectMenus } from "./helpers/embed";
 
 export const client = new Client({
   intents: [
@@ -35,22 +38,32 @@ client.once(Events.ClientReady, () => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isStringSelectMenu()) {
+    const originalUserId = interaction.message.interactionMetadata?.user.id;
+    if (originalUserId && interaction.user.id !== originalUserId) {
+      await interaction.reply({
+        content:
+          "You cannot interact with this menu because you did not create it, run the command yourself to manipulate the menu.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    const originalTimestamp = interaction.message.createdTimestamp;
+    if (originalTimestamp && Date.now() - originalTimestamp > 1000 * 60 * 5) {
+      await interaction.reply({
+        content: "This menu has expired, please run the command yourself to manipulate the menu.",
+        flags: MessageFlags.Ephemeral,
+      });
+
+      await interaction.message.edit({ components: disableSelectMenus(interaction.message.components) });
+      return;
+    }
+
     switch (interaction.customId) {
       case "select-sector-page": {
-        const originalUserId = interaction.message.interactionMetadata?.user.id;
-        if (originalUserId && interaction.user.id !== originalUserId) {
-          await interaction.reply({
-            content: "You cannot interact with this menu because you did not create it, run the command yourself to manipulate the menu.",
-            flags: MessageFlags.Ephemeral,
-          });
-          return;
-        }
         const selected = interaction.values[0] as "information" | "rewards";
         const sector = await LostSectorAPI.fetchCurrent();
-        const components = [
-          ...createSectorPageComponents(sector, selected),
-          createSectorSelectRow(selected),
-        ];
+        const components = buildSectorComponents(sector, selected);
         await interaction.update({ components });
         return;
       }
