@@ -1,7 +1,12 @@
-import { Client, GatewayIntentBits, Events, Collection } from "discord.js";
+import { Client, GatewayIntentBits, Events, Collection, MessageFlags } from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
 import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { LostSectorAPI } from "./api/lostsector";
+import {
+  createSectorPageComponents,
+  createSectorSelectRow,
+} from "./helpers/embed";
 
 export const client = new Client({
   intents: [
@@ -29,6 +34,30 @@ client.once(Events.ClientReady, () => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
+  if (interaction.isStringSelectMenu()) {
+    switch (interaction.customId) {
+      case "select-sector-page": {
+        const originalUserId = interaction.message.interactionMetadata?.user.id;
+        if (originalUserId && interaction.user.id !== originalUserId) {
+          await interaction.reply({
+            content: "You cannot interact with this menu because you did not create it, run the command yourself to manipulate the menu.",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+        const selected = interaction.values[0] as "information" | "rewards";
+        const sector = await LostSectorAPI.fetchCurrent();
+        const components = [
+          ...createSectorPageComponents(sector, selected),
+          createSectorSelectRow(selected),
+        ];
+        await interaction.update({ components });
+        return;
+      }
+      default:
+        return;
+    }
+  }
   if (!interaction.isChatInputCommand()) {
     return;
   }

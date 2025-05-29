@@ -47,7 +47,9 @@ export async function deployCommands(mode?: string) {
       config.DISCORD_CLIENT_ID,
       config.DISCORD_GUILD_ID
     );
-    console.log("No --prod flag: Registering commands to guild " + config.DISCORD_GUILD_ID);
+    console.log(
+      "No --prod flag: Registering commands to guild " + config.DISCORD_GUILD_ID
+    );
     await deleteAllCommands(route, "guild", false);
     await registerCommands(route, commandsData, "guild");
   }
