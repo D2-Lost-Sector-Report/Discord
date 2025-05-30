@@ -66,7 +66,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       case "select-sector-page": {
         const selected = interaction.values[0] as "information" | "rewards";
         const sector = await LostSectorAPI.fetchCurrent();
-        const components = buildSectorComponents(sector, selected);
+        const components = buildSectorComponents(sector, selected, client);
         await interaction.update({ components });
         return;
       }

@@ -16,7 +16,7 @@ export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();
   try {
     const sector = await LostSectorAPI.fetchCurrent();
-    const components = buildSectorComponents(sector, "information");
+    const components = buildSectorComponents(sector, "information", interaction.client);
     await interaction.editReply({
       flags: MessageFlags.IsComponentsV2,
       components,

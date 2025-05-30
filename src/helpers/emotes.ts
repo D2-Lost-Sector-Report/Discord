@@ -1,4 +1,4 @@
-import { client } from "..";
+import { Client } from "discord.js";
 import { config } from "../config";
 
 // Map user-friendly names to actual emote names in the server
@@ -36,7 +36,7 @@ const uppercaseEmojis = [
  * @param inputName The user-friendly name to look up.
  * @returns The formatted emote string, or the original input if not found.
  */
-export function getEmoteString(inputName: string): string {
+export function getEmoteString(inputName: string, client: Client): string {
   const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
   if (!guild) return inputName + " (emote server not found)";
 
@@ -46,14 +46,17 @@ export function getEmoteString(inputName: string): string {
     emoteName = emoteName.toUpperCase();
   }
 
-  const emote = guild.emojis.cache.find((e) => e.name === emoteName);
+  const emote =
+    guild.emojis.cache.find((e) => e.name === emoteName) ||
+    guild.emojis.cache.find((e) => e.name === emoteName.toLowerCase());
+
   if (!emote) return inputName + " (emote not found)";
   return emote.animated
     ? `<a:${emote.name}:${emote.id}>`
     : `<:${emote.name}:${emote.id}>`;
 }
 
-export function getEmoteId(inputName: string): string | null {
+export function getEmoteId(inputName: string, client: Client): string | null {
   const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
   if (!guild) return null;
 
