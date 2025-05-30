@@ -40,7 +40,7 @@ export async function deployCommands(mode?: string) {
     const route = Routes.applicationCommands(config.DISCORD_CLIENT_ID);
     console.log("--prod flag detected: Registering commands globally.");
     await deleteAllCommands(route, "global", true);
-    await registerCommands(route, commandsData, "global");
+    // await registerCommands(route, commandsData, "global");
   } else {
     // Register to guild only
     const route = Routes.applicationGuildCommands(

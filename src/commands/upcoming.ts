@@ -24,6 +24,7 @@ export async function execute(interaction: CommandInteraction) {
       );
     }
   } catch (err) {
+    console.error(err);
     await interaction.editReply("Failed to fetch upcoming lost sectors.");
   }
 }
