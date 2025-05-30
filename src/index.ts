@@ -7,9 +7,14 @@ import {
 } from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
-import type { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import type {
+  AutocompleteInteraction,
+  CommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js";
 import { LostSectorAPI } from "./api/lostsector";
 import { buildSectorComponents, disableSelectMenus } from "./helpers/embed";
+import { populateRewardsList } from "./api/lostsector";
 
 export const client = new Client({
   intents: [
@@ -22,6 +27,7 @@ export const client = new Client({
 type CommandModule = {
   data: SlashCommandBuilder;
   execute: (interaction: CommandInteraction) => Promise<any>;
+  autocomplete: (interaction: AutocompleteInteraction) => Promise<any>;
 };
 
 const commands = new Collection<string, CommandModule>();
@@ -32,8 +38,10 @@ for (const commandName in commandModules) {
   }
 }
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
   console.log(`Bot is connected as ${client.user!.tag}!`);
+  await populateRewardsList();
+  console.log("Rewards list loaded.");
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -74,13 +82,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
         return;
     }
   }
-  if (!interaction.isChatInputCommand()) {
-    return;
+  if (interaction.isChatInputCommand()) {
+    const { commandName } = interaction;
+    const command = commands.get(commandName);
+    if (command) {
+      await command.execute(interaction);
+    }
   }
-  const { commandName } = interaction;
-  const command = commands.get(commandName);
-  if (command) {
-    await command.execute(interaction);
+  if (interaction.isAutocomplete()) {
+    const { commandName } = interaction;
+    const command = commands.get(commandName);
+    if (command) {
+      try {
+        await command.autocomplete(interaction);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 });
 

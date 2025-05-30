@@ -151,7 +151,10 @@ export function createSectorPageComponents(
   return [];
 }
 
-export function createSectorSelectRow(selectedPage: "information" | "rewards", client: Client) {
+export function createSectorSelectRow(
+  selectedPage: "information" | "rewards",
+  client: Client
+) {
   const select = new StringSelectMenuBuilder()
     .setCustomId("select-sector-page")
     .addOptions(

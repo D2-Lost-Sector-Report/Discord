@@ -6,11 +6,10 @@ export const data = new SlashCommandBuilder()
   .setDescription("Replies with Pong!");
 
 export async function execute(interaction: CommandInteraction) {
-  if (!interaction.guild) {
-    return interaction.reply("No guild found");
-  }
   let response = "Testing emojis:\n";
-  response += "twitter: " + getEmoteString("twitter", interaction.client) + "\n";
-  response += "discord: " + getEmoteString("discord", interaction.client) + "\n";
+  response +=
+    "twitter: " + getEmoteString("twitter", interaction.client) + "\n";
+  response +=
+    "discord: " + getEmoteString("discord", interaction.client) + "\n";
   return interaction.reply(response);
 }

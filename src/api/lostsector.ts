@@ -65,3 +65,24 @@ export class LostSectorAPI {
     return this.fetchByDate(dateStr);
   }
 }
+
+export const rewardsList: string[] = [];
+
+export async function populateRewardsList() {
+  try {
+    const upcoming = await LostSectorAPI.fetchUpcoming();
+    const seen = new Set<string>();
+    rewardsList.length = 0;
+    for (const sector of upcoming) {
+      for (const { reward } of sector.rewards || []) {
+        const formatted = `${reward.name} (${reward.type})`;
+        if (!seen.has(formatted)) {
+          seen.add(formatted);
+          rewardsList.push(formatted);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Failed to populate rewardsList:", err);
+  }
+}
