@@ -52,6 +52,20 @@ export function createSectorPageComponents(
   if (page === "information") {
     const imageUrls = getSectorImageUrls(sector.activityid, sector.imageCount);
 
+    const currentDate = new Date();
+    const utcHours = currentDate.getUTCHours();
+    if (utcHours < 17) {
+      currentDate.setUTCDate(currentDate.getUTCDate() - 1);
+    }
+    const currentDateString = currentDate.toISOString().split('T')[0];
+
+    let activeDate = "";
+    if (sector.date && sector.date.split('T')[0] === currentDateString) {
+      activeDate = `### Active until: <t:${Math.floor((new Date(sector.date).getTime() + fromDays(1)) / 1000)}:t>`;
+    } else {
+      activeDate = `### Active at: <t:${Math.floor((new Date(sector.date).getTime()) / 1000)}:f>`;
+    }
+
     const containerComponent = new ContainerBuilder()
       .setAccentColor(colors.information)
       .addTextDisplayComponents(
@@ -78,7 +92,7 @@ export function createSectorPageComponents(
       .addSeparatorComponents(new SeparatorBuilder())
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          `### Active until: <t:${Math.floor((new Date(sector.date).getTime() + fromDays(1)) / 1000)}:t>`
+          activeDate
         )
       );
 
