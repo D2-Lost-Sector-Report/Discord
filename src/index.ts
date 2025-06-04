@@ -50,6 +50,22 @@ if (isShardingManager) {
     console.log("Rewards list loaded.");
   });
 
+  client.on(Events.GuildCreate, async (guild) => {
+    console.log(`Joined guild ${guild.name} (${guild.id})`);
+    const loggingChannel = await guild.channels.fetch(config.DISCORD_LOGGING_CHANNEL_ID);
+    if (loggingChannel && loggingChannel.isTextBased()) {
+      await loggingChannel.send(`🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
+    }
+  });
+
+  client.on(Events.GuildDelete, async (guild) => {
+    console.log(`Left guild ${guild.name} (${guild.id})`);
+    const loggingChannel = await guild.channels.fetch(config.DISCORD_LOGGING_CHANNEL_ID);
+    if (loggingChannel && loggingChannel.isTextBased()) {
+      await loggingChannel.send(`🙁 Left server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
+    }
+  });
+
   client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.isStringSelectMenu()) {
       const originalUserId = interaction.message.interactionMetadata?.user.id;
