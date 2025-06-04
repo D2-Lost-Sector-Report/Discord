@@ -11,7 +11,7 @@ const isShardingManager = !process.send;
 if (isShardingManager) {
   // This is the master process, start the sharding manager
   const manager = new ShardingManager(__filename, {
-    token: config.DISCORD_TOKEN!,
+    token: config.TOKEN!,
     execArgv: process.execArgv,
   });
 
@@ -52,7 +52,9 @@ if (isShardingManager) {
 
   client.on(Events.GuildCreate, async (guild) => {
     console.log(`Joined guild ${guild.name} (${guild.id})`);
-    const loggingChannel = await guild.channels.fetch(config.DISCORD_LOGGING_CHANNEL_ID);
+    const loggingChannel = await guild.channels.fetch(
+      config.LOGGING_CHANNEL_ID
+    );
     if (loggingChannel && loggingChannel.isTextBased()) {
       await loggingChannel.send(`🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
     }
@@ -60,7 +62,9 @@ if (isShardingManager) {
 
   client.on(Events.GuildDelete, async (guild) => {
     console.log(`Left guild ${guild.name} (${guild.id})`);
-    const loggingChannel = await guild.channels.fetch(config.DISCORD_LOGGING_CHANNEL_ID);
+    const loggingChannel = await guild.channels.fetch(
+      config.LOGGING_CHANNEL_ID
+    );
     if (loggingChannel && loggingChannel.isTextBased()) {
       await loggingChannel.send(`🙁 Left server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
     }
@@ -125,7 +129,7 @@ if (isShardingManager) {
   });
 
   client
-    .login(config.DISCORD_TOKEN)
+    .login(config.TOKEN)
     .then(() => {
       console.log("Logged in successfully!");
     })

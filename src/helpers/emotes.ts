@@ -37,7 +37,7 @@ const uppercaseEmojis = [
  * @returns The formatted emote string, or the original input if not found.
  */
 export function getEmoteString(inputName: string, client: Client): string {
-  const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
+  const guild = client.guilds.cache.get(config.GUILD_ID);
   if (!guild) return inputName + " (emote server not found)";
 
   let emoteName = emoteNameMap[inputName.toLowerCase()] || inputName;
@@ -57,7 +57,7 @@ export function getEmoteString(inputName: string, client: Client): string {
 }
 
 export function getEmoteId(inputName: string, client: Client): string | null {
-  const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID);
+  const guild = client.guilds.cache.get(config.GUILD_ID);
   if (!guild) return null;
 
   const emote = guild.emojis.cache.find((e) => e.name === inputName);

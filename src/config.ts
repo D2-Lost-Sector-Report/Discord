@@ -3,17 +3,24 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const { DISCORD_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID, DISCORD_LOGGING_CHANNEL_ID } = process.env;
+const {
+  TOKEN,
+  CLIENT_ID,
+  GUILD_ID,
+  LOGGING_CHANNEL_ID,
+  ANNOUNCEMENT_CHANNEL_ID,
+} = process.env;
 
-if (!DISCORD_TOKEN || !DISCORD_CLIENT_ID || !DISCORD_GUILD_ID || !DISCORD_LOGGING_CHANNEL_ID) {
+if (!TOKEN || !CLIENT_ID || !GUILD_ID || !LOGGING_CHANNEL_ID) {
   throw new Error("Missing environment variables");
 }
 
 export const config = {
-  DISCORD_TOKEN,
-  DISCORD_CLIENT_ID,
-  DISCORD_GUILD_ID,
-  DISCORD_LOGGING_CHANNEL_ID,
+  TOKEN,
+  CLIENT_ID,
+  GUILD_ID,
+  LOGGING_CHANNEL_ID,
+  ANNOUNCEMENT_CHANNEL_ID,
 };
 
 const informationColor: RGBTuple = [86, 147, 245];
