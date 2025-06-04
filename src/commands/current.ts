@@ -8,9 +8,7 @@ import { buildSectorComponents } from "../helpers/embed";
 
 export const data = new SlashCommandBuilder()
   .setName("current")
-  .setDescription(
-    "Show the currently active lost sector as an interactive embed."
-  );
+  .setDescription("Show the currently active Lost Sector.");
 
 export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();

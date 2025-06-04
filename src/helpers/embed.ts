@@ -57,13 +57,13 @@ export function createSectorPageComponents(
     if (utcHours < 17) {
       currentDate.setUTCDate(currentDate.getUTCDate() - 1);
     }
-    const currentDateString = currentDate.toISOString().split('T')[0];
+    const currentDateString = currentDate.toISOString().split("T")[0];
 
     let activeDate = "";
-    if (sector.date && sector.date.split('T')[0] === currentDateString) {
+    if (sector.date && sector.date.split("T")[0] === currentDateString) {
       activeDate = `### Active until: <t:${Math.floor((new Date(sector.date).getTime() + fromDays(1)) / 1000)}:t>`;
     } else {
-      activeDate = `### Active at: <t:${Math.floor((new Date(sector.date).getTime()) / 1000)}:f>`;
+      activeDate = `### Active at: <t:${Math.floor(new Date(sector.date).getTime() / 1000)}:f>`;
     }
 
     const containerComponent = new ContainerBuilder()
@@ -91,9 +91,7 @@ export function createSectorPageComponents(
       )
       .addSeparatorComponents(new SeparatorBuilder())
       .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          activeDate
-        )
+        new TextDisplayBuilder().setContent(activeDate)
       );
 
     const actionRowComponent =
@@ -167,26 +165,28 @@ export function createSectorPageComponents(
 
 export function createSectorSelectRow(
   selectedPage: "information" | "rewards",
-  client: Client
+  client: Client,
+  sectorDate?: string
 ) {
-  const select = new StringSelectMenuBuilder()
-    .setCustomId("select-sector-page")
-    .addOptions(
-      new StringSelectMenuOptionBuilder()
-        .setLabel("Information")
-        .setValue("information")
-        .setEmoji(getEmoteId("lostsector", client) || "🔍")
-        .setDescription("Show info including champions and shields")
-        .setDefault(selectedPage === "information"),
-      new StringSelectMenuOptionBuilder()
-        .setLabel("Rewards")
-        .setValue("rewards")
-        .setEmoji(getEmoteId("exotic", client) || "⭐")
-        .setDescription(
-          "Show rewards info including legendary weapons and Rahool's focus"
-        )
-        .setDefault(selectedPage === "rewards")
-    );
+  const customId = sectorDate
+    ? `select-sector-page|${sectorDate}`
+    : "select-sector-page";
+  const select = new StringSelectMenuBuilder().setCustomId(customId).addOptions(
+    new StringSelectMenuOptionBuilder()
+      .setLabel("Information")
+      .setValue("information")
+      .setEmoji(getEmoteId("lostsector", client) || "🔍")
+      .setDescription("Show info including champions and shields")
+      .setDefault(selectedPage === "information"),
+    new StringSelectMenuOptionBuilder()
+      .setLabel("Rewards")
+      .setValue("rewards")
+      .setEmoji(getEmoteId("exotic", client) || "⭐")
+      .setDescription(
+        "Show rewards info including legendary weapons and Rahool's focus"
+      )
+      .setDefault(selectedPage === "rewards")
+  );
   return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
     select
   );
@@ -212,11 +212,12 @@ export function createFooterLinks() {
 export function buildSectorComponents(
   sector: LostSector,
   selectedPage: "information" | "rewards",
-  client: Client
+  client: Client,
+  sectorDate?: string
 ) {
   return [
     ...createSectorPageComponents(sector, selectedPage, client),
-    createSectorSelectRow(selectedPage, client),
+    createSectorSelectRow(selectedPage, client, sectorDate ?? sector.date),
     createFooterLinks(),
   ];
 }
@@ -232,10 +233,12 @@ function generateChampionList(champions: any[], client: Client): string {
 
 function generateShieldList(shields: any[], client: Client): string {
   return shields
-    .map(
-      (shield) =>
-        `${getEmoteString(shield.key, client)} (${shield.expert} | ${shield.master}) `
-    )
+    .map((shield) => {
+      if (shield.key === "none") {
+        return "None";
+      }
+      return `${getEmoteString(shield.key, client)} (${shield.expert} | ${shield.master}) `;
+    })
     .join(" ");
 }
 
@@ -253,4 +256,26 @@ export function disableSelectMenus(components: any[]) {
     }
     return row;
   });
+}
+
+export function createUpcomingSectorsComponent(
+  sectors: { name: string; date: string }[],
+  client: Client
+) {
+  const container = new ContainerBuilder()
+    .setAccentColor(colors.information)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `## ${getEmoteString("lostsector", client)} Upcoming Lost Sectors\n\n` +
+          sectors
+            .map(
+              (s, i) =>
+                `**${i + 1}.** ${s.name} — <t:${Math.floor(
+                  new Date(s.date).getTime() / 1000
+                )}:R>`
+            )
+            .join("\n")
+      )
+    );
+  return [container, createFooterLinks()];
 }

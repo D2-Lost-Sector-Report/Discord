@@ -1,7 +1,18 @@
-import { ShardingManager, Client, GatewayIntentBits, Events, Collection, MessageFlags } from "discord.js";
+import {
+  ShardingManager,
+  Client,
+  GatewayIntentBits,
+  Events,
+  Collection,
+  MessageFlags,
+} from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
-import type { AutocompleteInteraction, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import type {
+  AutocompleteInteraction,
+  CommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js";
 import { LostSectorAPI } from "./api/lostsector";
 import { buildSectorComponents, disableSelectMenus } from "./helpers/embed";
 import { populateRewardsList } from "./api/lostsector";
@@ -9,7 +20,6 @@ import { populateRewardsList } from "./api/lostsector";
 const isShardingManager = !process.send;
 
 if (isShardingManager) {
-  // This is the master process, start the sharding manager
   const manager = new ShardingManager(__filename, {
     token: config.TOKEN!,
     execArgv: process.execArgv,
@@ -21,7 +31,6 @@ if (isShardingManager) {
 
   manager.spawn();
 } else {
-  // This is a shard process, start the bot as before
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
@@ -56,7 +65,9 @@ if (isShardingManager) {
       config.LOGGING_CHANNEL_ID
     );
     if (loggingChannel && loggingChannel.isTextBased()) {
-      await loggingChannel.send(`🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
+      await loggingChannel.send(
+        `🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`
+      );
     }
   });
 
@@ -66,7 +77,9 @@ if (isShardingManager) {
       config.LOGGING_CHANNEL_ID
     );
     if (loggingChannel && loggingChannel.isTextBased()) {
-      await loggingChannel.send(`🙁 Left server ${guild.name} (Total servers: ${client.guilds.cache.size})`);
+      await loggingChannel.send(
+        `🙁 Left server ${guild.name} (Total servers: ${client.guilds.cache.size})`
+      );
     }
   });
 
@@ -96,11 +109,22 @@ if (isShardingManager) {
         return;
       }
 
-      switch (interaction.customId) {
+      switch (interaction.customId.split("|")[0]) {
         case "select-sector-page": {
           const selected = interaction.values[0] as "information" | "rewards";
-          const sector = await LostSectorAPI.fetchCurrent();
-          const components = buildSectorComponents(sector, selected, client);
+          const parts = interaction.customId.split("|");
+          let sector;
+          if (parts.length > 1) {
+            sector = await LostSectorAPI.fetchByDate(parts[1]);
+          } else {
+            sector = await LostSectorAPI.fetchCurrent();
+          }
+          const components = buildSectorComponents(
+            sector,
+            selected,
+            client,
+            sector.date
+          );
           await interaction.update({ components });
           return;
         }
