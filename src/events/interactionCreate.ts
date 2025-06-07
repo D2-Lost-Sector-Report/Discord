@@ -1,12 +1,16 @@
-import { Events, MessageFlags, Collection, Client, Interaction } from "discord.js";
+import { Events, MessageFlags, Collection, Interaction, Client } from "discord.js";
 import { LostSectorAPI } from "../api/lostsector";
 import { buildSectorComponents, disableSelectMenus } from "../helpers/embed";
 import type { EventHandler } from "./types";
+import { isEmoteCacheLoaded, loadEmoteCacheFromFile } from "../helpers/emotes";
 
 const handler: EventHandler<"interactionCreate"> = {
   name: Events.InteractionCreate,
-  async execute(interaction: Interaction, client: Client, commands?: Collection<string, any>) {
+  async execute(interaction: Interaction, _client: Client, commands?: Collection<string, any>) {
     if (!commands) return;
+
+    if (!isEmoteCacheLoaded()) await loadEmoteCacheFromFile();
+
     if (interaction.isStringSelectMenu()) {
       const originalUserId = interaction.message.interactionMetadata?.user.id;
       if (originalUserId && interaction.user.id !== originalUserId) {

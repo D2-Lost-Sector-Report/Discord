@@ -1,4 +1,6 @@
-import { Collection, GuildEmoji } from "discord.js";
+import { GuildEmoji } from "discord.js";
+import fs from "fs/promises";
+import { Collection } from "discord.js";
 
 // Map user-friendly names to actual emote names in the server
 const emoteNameMap: Record<string, string> = {
@@ -30,12 +32,17 @@ const uppercaseEmojis = [
   "boots",
 ];
 
-// Module-level emote cache
-let emoteCache: Collection<string, GuildEmoji> | null = null;
+// Emote cache type
+interface EmoteData {
+  name: string;
+  id: string;
+  animated: boolean;
+}
 
-export function setEmoteCache(cache: Collection<string, GuildEmoji>) {
-  emoteCache = cache;
-  console.log("Added", cache.size, "emotes to emote cache");
+let emoteCache: EmoteData[] = [];
+
+export function isEmoteCacheLoaded() {
+  return emoteCache.length > 0;
 }
 
 /**
@@ -44,7 +51,7 @@ export function setEmoteCache(cache: Collection<string, GuildEmoji>) {
  * @returns The formatted emote string, or the original input if not found.
  */
 export function getEmoteString(inputName: string): string {
-  if (!emoteCache) return inputName + " (emote server not found)";
+  if (!isEmoteCacheLoaded()) return inputName + " (emote server not found)";
 
   let emoteName = emoteNameMap[inputName.toLowerCase()] || inputName;
 
@@ -63,8 +70,41 @@ export function getEmoteString(inputName: string): string {
 }
 
 export function getEmoteId(inputName: string): string | null {
-  if (!emoteCache) return null;
+  if (!isEmoteCacheLoaded()) return null;
   const emote = emoteCache.find((e) => e.name === inputName);
   if (!emote) return null;
   return emote.id;
+}
+
+export async function loadEmoteCacheFromFile(path = "emotes.json") {
+  try {
+    const data = await fs.readFile(path, "utf-8");
+    emoteCache = JSON.parse(data);
+    console.log("Loaded", emoteCache.length, "emotes from file");
+  } catch (err) {
+    console.error("Failed to load emote cache:", err);
+    emoteCache = [];
+  }
+}
+
+export async function writeEmoteCacheToFile(
+  emotes: EmoteData[] | Collection<string, GuildEmoji>,
+  path = "emotes.json"
+) {
+  let emoteArr: EmoteData[];
+  if (Array.isArray(emotes)) {
+    emoteArr = emotes;
+  } else {
+    emoteArr = emotes.map(e => ({
+      name: e.name ?? '',
+      id: e.id,
+      animated: e.animated ?? false,
+    }));
+  }
+  try {
+    await fs.writeFile(path, JSON.stringify(emoteArr, null, 2));
+    console.log("Wrote", emoteArr.length, "emotes to", path);
+  } catch (err) {
+    console.error("Failed to write emote cache:", err);
+  }
 }
