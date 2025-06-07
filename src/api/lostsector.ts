@@ -82,6 +82,7 @@ export async function populateRewardsList() {
         }
       }
     }
+    console.log("Rewards list populated with", rewardsList.length, "rewards");
   } catch (err) {
     console.error("Failed to populate rewardsList:", err);
   }

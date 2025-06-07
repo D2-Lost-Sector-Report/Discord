@@ -2,9 +2,7 @@ import {
   ShardingManager,
   Client,
   GatewayIntentBits,
-  Events,
   Collection,
-  MessageFlags,
 } from "discord.js";
 import { config } from "./config";
 import { commands as commandModules } from "./commands";
@@ -13,9 +11,7 @@ import type {
   CommandInteraction,
   SlashCommandBuilder,
 } from "discord.js";
-import { LostSectorAPI } from "./api/lostsector";
-import { buildSectorComponents, disableSelectMenus } from "./helpers/embed";
-import { populateRewardsList } from "./api/lostsector";
+import events from "./events";
 
 const isShardingManager = !process.send;
 
@@ -53,104 +49,13 @@ if (isShardingManager) {
     }
   }
 
-  client.once(Events.ClientReady, async () => {
-    console.log(`Bot is connected as ${client.user!.tag}!`);
-    await populateRewardsList();
-    console.log("Rewards list loaded.");
-  });
-
-  client.on(Events.GuildCreate, async (guild) => {
-    console.log(`Joined guild ${guild.name} (${guild.id})`);
-    const loggingChannel = await guild.channels.fetch(
-      config.LOGGING_CHANNEL_ID
-    );
-    if (loggingChannel && loggingChannel.isTextBased()) {
-      await loggingChannel.send(
-        `🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`
-      );
+  for (const event of events) {
+    if (event.once) {
+      client.once(event.name, (...args) => event.execute(...args, client, commands));
+    } else {
+      client.on(event.name, (...args) => event.execute(...args, client, commands));
     }
-  });
-
-  client.on(Events.GuildDelete, async (guild) => {
-    console.log(`Left guild ${guild.name} (${guild.id})`);
-    const loggingChannel = await guild.channels.fetch(
-      config.LOGGING_CHANNEL_ID
-    );
-    if (loggingChannel && loggingChannel.isTextBased()) {
-      await loggingChannel.send(
-        `🙁 Left server ${guild.name} (Total servers: ${client.guilds.cache.size})`
-      );
-    }
-  });
-
-  client.on(Events.InteractionCreate, async (interaction) => {
-    if (interaction.isStringSelectMenu()) {
-      const originalUserId = interaction.message.interactionMetadata?.user.id;
-      if (originalUserId && interaction.user.id !== originalUserId) {
-        await interaction.reply({
-          content:
-            "You cannot interact with this menu because you did not create it, run the command yourself to manipulate the menu.",
-          flags: MessageFlags.Ephemeral,
-        });
-        return;
-      }
-
-      const originalTimestamp = interaction.message.createdTimestamp;
-      if (originalTimestamp && Date.now() - originalTimestamp > 1000 * 60 * 5) {
-        await interaction.reply({
-          content:
-            "This menu has expired, please run the command yourself to manipulate the menu.",
-          flags: MessageFlags.Ephemeral,
-        });
-
-        await interaction.message.edit({
-          components: disableSelectMenus(interaction.message.components),
-        });
-        return;
-      }
-
-      switch (interaction.customId.split("|")[0]) {
-        case "select-sector-page": {
-          const selected = interaction.values[0] as "information" | "rewards";
-          const parts = interaction.customId.split("|");
-          let sector;
-          if (parts.length > 1) {
-            sector = await LostSectorAPI.fetchByDate(parts[1]);
-          } else {
-            sector = await LostSectorAPI.fetchCurrent();
-          }
-          const components = buildSectorComponents(
-            sector,
-            selected,
-            client,
-            sector.date
-          );
-          await interaction.update({ components });
-          return;
-        }
-        default:
-          return;
-      }
-    }
-    if (interaction.isChatInputCommand()) {
-      const { commandName } = interaction;
-      const command = commands.get(commandName);
-      if (command) {
-        await command.execute(interaction);
-      }
-    }
-    if (interaction.isAutocomplete()) {
-      const { commandName } = interaction;
-      const command = commands.get(commandName);
-      if (command) {
-        try {
-          await command.autocomplete(interaction);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
-  });
+  }
 
   client
     .login(config.TOKEN)
