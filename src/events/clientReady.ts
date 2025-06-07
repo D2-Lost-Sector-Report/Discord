@@ -13,8 +13,8 @@ const handler: EventHandler<"ready"> = {
     if (guild) {
       await guild.emojis.fetch();
       await writeEmoteCacheToFile(guild.emojis.cache);
-      await populateRewardsList();
     }
+    await populateRewardsList();
   },
 };
 
