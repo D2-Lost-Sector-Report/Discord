@@ -41,7 +41,6 @@ export async function execute(interaction: CommandInteraction) {
       const components = buildSectorComponents(
         fullSector,
         "information",
-        interaction.client,
         sector.date
       );
       await interaction.editReply({
@@ -60,10 +59,7 @@ export async function execute(interaction: CommandInteraction) {
     if (uniqueSectors.length === 0) {
       await interaction.editReply("No upcoming lost sectors found.");
     } else {
-      const components = createUpcomingSectorsComponent(
-        uniqueSectors,
-        interaction.client
-      );
+      const components = createUpcomingSectorsComponent(uniqueSectors);
       await interaction.editReply({
         flags: MessageFlags.IsComponentsV2,
         components,

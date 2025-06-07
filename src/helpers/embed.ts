@@ -11,8 +11,7 @@ import {
   SeparatorBuilder,
   ComponentType,
   SectionBuilder,
-  ThumbnailBuilder,
-  Client,
+  ThumbnailBuilder
 } from "discord.js";
 import { getEmoteId, getEmoteString } from "./emotes";
 import { getFastestTimesLink, getLeaderboardLink } from "./links";
@@ -46,8 +45,7 @@ function getRahoolImageUrl(reward: string): string {
 
 export function createSectorPageComponents(
   sector: LostSector,
-  page: "information" | "rewards",
-  client: Client
+  page: "information" | "rewards"
 ) {
   if (page === "information") {
     const imageUrls = getSectorImageUrls(sector.activityid, sector.imageCount);
@@ -70,7 +68,7 @@ export function createSectorPageComponents(
       .setAccentColor(colors.information)
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          `## ${getEmoteString("lostsector", client)} ${sector.name}`
+          `## ${getEmoteString("lostsector")} ${sector.name}`
         )
       )
       .addMediaGalleryComponents(
@@ -82,11 +80,11 @@ export function createSectorPageComponents(
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
           `### Modifiers (Expert [${powerLevel.expert}] | Master [${powerLevel.master}])\n\n` +
-            `**Champions**: ${generateChampionList(sector.champions, client)}\n` +
-            `**Shields**: ${generateShieldList(sector.shields, client)}\n` +
-            `**Threat**: ${getEmoteString(sector.threat, client)}\n` +
-            `**Surges**: ${sector.surges.map((surge) => getEmoteString(surge, client)).join(" ")}\n` +
-            `**Overcharge**: ${getEmoteString(sector.overcharge, client)} ${sector.overcharge}`
+            `**Champions**: ${generateChampionList(sector.champions)}\n` +
+            `**Shields**: ${generateShieldList(sector.shields)}\n` +
+            `**Threat**: ${getEmoteString(sector.threat)}\n` +
+            `**Surges**: ${sector.surges.map((surge) => getEmoteString(surge)).join(" ")}\n` +
+            `**Overcharge**: ${getEmoteString(sector.overcharge)} ${sector.overcharge}`
         )
       )
       .addSeparatorComponents(new SeparatorBuilder())
@@ -116,7 +114,7 @@ export function createSectorPageComponents(
       .setAccentColor(colors.rewards)
       .addTextDisplayComponents(
         new TextDisplayBuilder().setContent(
-          `## ${getEmoteString("lostsector", client)} ${sector.name}\n` +
+          `## ${getEmoteString("lostsector")} ${sector.name}\n` +
             `### Today's Rewards\n\n` +
             `Weapon drop rates, assuming no Champions are left alive:\n` +
             `- **Expert**: 70% chance\n` +
@@ -165,7 +163,6 @@ export function createSectorPageComponents(
 
 export function createSectorSelectRow(
   selectedPage: "information" | "rewards",
-  client: Client,
   sectorDate?: string
 ) {
   const customId = sectorDate
@@ -175,13 +172,13 @@ export function createSectorSelectRow(
     new StringSelectMenuOptionBuilder()
       .setLabel("Information")
       .setValue("information")
-      .setEmoji(getEmoteId("lostsector", client) || "🔍")
+      .setEmoji(getEmoteId("lostsector") || "🔍")
       .setDescription("Show info including champions and shields")
       .setDefault(selectedPage === "information"),
     new StringSelectMenuOptionBuilder()
       .setLabel("Rewards")
       .setValue("rewards")
-      .setEmoji(getEmoteId("exotic", client) || "⭐")
+      .setEmoji(getEmoteId("exotic") || "⭐")
       .setDescription(
         "Show rewards info including legendary weapons and Rahool's focus"
       )
@@ -212,32 +209,31 @@ export function createFooterLinks() {
 export function buildSectorComponents(
   sector: LostSector,
   selectedPage: "information" | "rewards",
-  client: Client,
   sectorDate?: string
 ) {
   return [
-    ...createSectorPageComponents(sector, selectedPage, client),
-    createSectorSelectRow(selectedPage, client, sectorDate ?? sector.date),
+    ...createSectorPageComponents(sector, selectedPage),
+    createSectorSelectRow(selectedPage, sectorDate ?? sector.date),
     createFooterLinks(),
   ];
 }
 
-function generateChampionList(champions: any[], client: Client): string {
+function generateChampionList(champions: any[]): string {
   return champions
     .map(
       (champion) =>
-        `${getEmoteString(champion.key, client)} (${champion.expert} | ${champion.master}) `
+        `${getEmoteString(champion.key)} (${champion.expert} | ${champion.master}) `
     )
     .join(" ");
 }
 
-function generateShieldList(shields: any[], client: Client): string {
+function generateShieldList(shields: any[]): string {
   return shields
     .map((shield) => {
       if (shield.key === "none") {
         return "None";
       }
-      return `${getEmoteString(shield.key, client)} (${shield.expert} | ${shield.master}) `;
+      return `${getEmoteString(shield.key)} (${shield.expert} | ${shield.master}) `;
     })
     .join(" ");
 }
@@ -259,14 +255,13 @@ export function disableSelectMenus(components: any[]) {
 }
 
 export function createUpcomingSectorsComponent(
-  sectors: { name: string; date: string }[],
-  client: Client
+  sectors: { name: string; date: string }[]
 ) {
   const container = new ContainerBuilder()
     .setAccentColor(colors.information)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## ${getEmoteString("lostsector", client)} Upcoming Lost Sectors\n\n` +
+        `## ${getEmoteString("lostsector")} Upcoming Lost Sectors\n\n` +
           sectors
             .map(
               (s, i) =>

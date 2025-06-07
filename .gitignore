@@ -133,3 +133,5 @@ dist
 .idea/
 
 .env
+.env.prod
+.env.dev

@@ -44,11 +44,7 @@ export async function execute(interaction: CommandInteraction) {
         );
         const components = [
           summaryComponent,
-          ...createSectorPageComponents(
-            fullSector,
-            "information",
-            interaction.client
-          ),
+          ...createSectorPageComponents(fullSector, "information"),
           createFooterLinks(),
         ];
         await interaction.editReply({

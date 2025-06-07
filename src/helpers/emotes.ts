@@ -1,5 +1,4 @@
-import { Client } from "discord.js";
-import { config } from "../config";
+import { Collection, GuildEmoji } from "discord.js";
 
 // Map user-friendly names to actual emote names in the server
 const emoteNameMap: Record<string, string> = {
@@ -31,14 +30,21 @@ const uppercaseEmojis = [
   "boots",
 ];
 
+// Module-level emote cache
+let emoteCache: Collection<string, GuildEmoji> | null = null;
+
+export function setEmoteCache(cache: Collection<string, GuildEmoji>) {
+  emoteCache = cache;
+  console.log("Added", cache.size, "emotes to emote cache");
+}
+
 /**
  * Finds an emote by user-friendly name in the given guild and returns the formatted string for posting.
  * @param inputName The user-friendly name to look up.
  * @returns The formatted emote string, or the original input if not found.
  */
-export function getEmoteString(inputName: string, client: Client): string {
-  const guild = client.guilds.cache.get(config.GUILD_ID);
-  if (!guild) return inputName + " (emote server not found)";
+export function getEmoteString(inputName: string): string {
+  if (!emoteCache) return inputName + " (emote server not found)";
 
   let emoteName = emoteNameMap[inputName.toLowerCase()] || inputName;
 
@@ -47,8 +53,8 @@ export function getEmoteString(inputName: string, client: Client): string {
   }
 
   const emote =
-    guild.emojis.cache.find((e) => e.name === emoteName) ||
-    guild.emojis.cache.find((e) => e.name === emoteName.toLowerCase());
+    emoteCache.find((e) => e.name === emoteName) ||
+    emoteCache.find((e) => e.name === emoteName.toLowerCase());
 
   if (!emote) return inputName + " (emote not found)";
   return emote.animated
@@ -56,11 +62,9 @@ export function getEmoteString(inputName: string, client: Client): string {
     : `<:${emote.name}:${emote.id}>`;
 }
 
-export function getEmoteId(inputName: string, client: Client): string | null {
-  const guild = client.guilds.cache.get(config.GUILD_ID);
-  if (!guild) return null;
-
-  const emote = guild.emojis.cache.find((e) => e.name === inputName);
+export function getEmoteId(inputName: string): string | null {
+  if (!emoteCache) return null;
+  const emote = emoteCache.find((e) => e.name === inputName);
   if (!emote) return null;
   return emote.id;
 }

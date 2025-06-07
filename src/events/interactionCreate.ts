@@ -45,7 +45,6 @@ const handler: EventHandler<"interactionCreate"> = {
           const components = buildSectorComponents(
             sector,
             selected,
-            client,
             sector.date
           );
           await interaction.update({ components });

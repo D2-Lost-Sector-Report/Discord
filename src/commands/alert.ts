@@ -121,8 +121,7 @@ export async function execute(interaction: CommandInteraction) {
       const sector = await LostSectorAPI.fetchCurrent();
       const components = buildSectorComponents(
         sector,
-        "information",
-        interaction.client
+        "information"
       );
       await channel.send({
         flags: MessageFlags.IsComponentsV2,
