@@ -12,11 +12,11 @@ import { LostSectorAPI } from "../api/lostsector";
 
 export const data = new SlashCommandBuilder()
   .setName("next-armor")
-  .setDescription("Get the next sector to focus a selected armor piece.")
+  .setDescription("Get the next day when Rahool will focus a selected armor type for free.")
   .addStringOption((option) =>
     option
       .setName("armor")
-      .setDescription("The armor piece to check")
+      .setDescription("The armor type to check")
       .setRequired(true)
       .addChoices(
         { name: "Helmet", value: "Helmet" },
@@ -31,7 +31,7 @@ export async function execute(interaction: CommandInteraction) {
 
   const armor = interaction.options.get("armor")?.value as string;
   if (!armor) {
-    await interaction.editReply("No armor piece provided");
+    await interaction.editReply("No armor type provided");
     return;
   }
 
@@ -41,7 +41,7 @@ export async function execute(interaction: CommandInteraction) {
       if (sector.rahool === armor) {
         const fullSector = await LostSectorAPI.fetchByDate(sector.date);
         const summaryComponent = new TextDisplayBuilder().setContent(
-          `The next Lost Sector to focus **${armor}** is on **${sector.date.split("T")[0]}**.`
+          `Rahool will next focus **${armor}** on **${sector.date.split("T")[0]}**. The Lost Sector will be:`
         );
         const components = [
           summaryComponent,
@@ -56,7 +56,7 @@ export async function execute(interaction: CommandInteraction) {
       }
     }
     await interaction.editReply(
-      `No upcoming lost sector found for **${armor}** focus.`
+      `No upcoming days found for **${armor}** focussing.`
     );
   } catch (err) {
     console.error(err);
