@@ -6,9 +6,16 @@ const handler: EventHandler<"guildCreate"> = {
   name: Events.GuildCreate,
   async execute(guild: Guild, client: Client) {
     console.log(`Joined guild ${guild.name} (${guild.id})`);
+    let totalGuilds: number;
+    if (client.shard) {
+      const results = await client.shard.broadcastEval(c => c.guilds.cache.size);
+      totalGuilds = results.reduce((acc, count) => acc + count, 0);
+    } else {
+      totalGuilds = client.guilds.cache.size;
+    }
     await sendToLoggingChannel(
       client,
-      `🙂 Joined server ${guild.name} (Total servers: ${client.guilds.cache.size})`
+      `🙂 Joined server ${guild.name} (Total servers: ${totalGuilds})`
     );
   },
 };
