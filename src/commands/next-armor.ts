@@ -41,7 +41,7 @@ export async function execute(interaction: CommandInteraction) {
       if (sector.rahool === armor) {
         const fullSector = await LostSectorAPI.fetchByDate(sector.date);
         const summaryComponent = new TextDisplayBuilder().setContent(
-          `Rahool will next focus **${armor}** on **${sector.date.split("T")[0]}**. The Lost Sector will be:`
+          `Rahool will next focus engrams into **${armor}** armor on **${sector.date.split("T")[0]}**. The Lost Sector will be:`
         );
         const components = [
           summaryComponent,
