@@ -83,6 +83,7 @@ export async function execute(interaction: CommandInteraction) {
       await interaction.editReply("Could not find the main server.");
       return;
     }
+    await guild.channels.fetch();
     const announcementChannel = guild.channels.cache.get(
       config.ANNOUNCEMENT_CHANNEL_ID!
     );
