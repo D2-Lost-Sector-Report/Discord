@@ -65,7 +65,20 @@ export async function execute(interaction: CommandInteraction) {
     }
 
     // Follow the announcement channel
-    const guild = interaction.client.guilds.cache.get(config.GUILD_ID!);
+    let guild;
+    if (interaction.client.shard) {
+      const results = await interaction.client.shard.broadcastEval(
+        (c, { guildId }) => {
+          const g = c.guilds.cache.get(guildId);
+          return g ? g.id : null;
+        },
+        { context: { guildId: config.GUILD_ID! } }
+      );
+      const foundId = results.find(id => id);
+      guild = foundId ? await interaction.client.guilds.fetch(foundId) : null;
+    } else {
+      guild = interaction.client.guilds.cache.get(config.GUILD_ID!);
+    }
     if (!guild) {
       await interaction.editReply("Could not find the main server.");
       return;
