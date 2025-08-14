@@ -24,16 +24,12 @@ export const config = {
 };
 
 const informationColor: RGBTuple = [86, 147, 245];
-const rewardsColor: RGBTuple = [79, 54, 99];
-const rahoolColor: RGBTuple = [255, 166, 0];
 
 export const colors = {
   information: informationColor,
-  rewards: rewardsColor,
-  rahool: rahoolColor,
 };
 
 export const powerLevel = {
-  expert: 2040,
-  master: 2050,
+  expert: 200,
+  master: 300,
 };

@@ -6,13 +6,13 @@ import {
   MessageFlags,
 } from "discord.js";
 import { config } from "../config";
-import { LostSectorAPI } from "../api/lostsector";
+import { LostSectorAPI, LostSectors } from "../api/lostsector";
 import { buildSectorComponents } from "../helpers/embed";
 
 export const data = new SlashCommandBuilder()
   .setName("alert")
   .setDescription(
-    "Add the daily Lost Sector notification to the current channel."
+    "Add notification of today's lost sectors to the current channel."
   );
 
 export async function execute(interaction: CommandInteraction) {
@@ -125,16 +125,16 @@ export async function execute(interaction: CommandInteraction) {
     const nextResetTimestamp = Math.floor(nextReset.getTime() / 1000);
 
     await interaction.editReply(
-      `Daily Lost Sector updates will now be posted to <#${channel.id}>.\n\n` +
-        `Current Lost Sector will be posted immediately, next in rotation will be posted every day around <t:${nextResetTimestamp}:t>.\n\n` +
+      `Daily updates for today's World Lost Sectors will now be posted to <#${channel.id}>.\n\n` +
+        `Today's Lost Sectors will be posted immediately, and subsequent updates will be posted each day at approx <t:${nextResetTimestamp}:t>.\n\n` +
         "If you want to remove these alerts, head to `Server Settings => Integrations => Channels Followed`."
     );
 
     // Post current Lost Sector info
     try {
-      const sector = await LostSectorAPI.fetchCurrent();
+      const sectors: LostSectors = await LostSectorAPI.fetchCurrent();
       const components = buildSectorComponents(
-        sector,
+        sectors,
         "information"
       );
       await channel.send({
@@ -144,7 +144,7 @@ export async function execute(interaction: CommandInteraction) {
     } catch (err: any) {
       console.error(err);
       await interaction.editReply(
-        `Failed to post current Lost Sector info: ${err.message || err}`
+        `Failed to post current Lost Sectors: ${err.message || err}`
       );
     }
   } catch (e: any) {

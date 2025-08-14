@@ -1,5 +1,5 @@
 import { Events, Client } from "discord.js";
-import { populateRewardsList } from "../api/lostsector";
+//import { populateRewardsList } from "../api/lostsector";
 import type { EventHandler } from "./types";
 import { writeEmoteCacheToFile } from "../helpers/emotes";
 import { config } from "../config";
@@ -14,7 +14,7 @@ const handler: EventHandler<"ready"> = {
       await guild.emojis.fetch();
       await writeEmoteCacheToFile(guild.emojis.cache);
     }
-    await populateRewardsList();
+    //await populateRewardsList();
   },
 };
 
