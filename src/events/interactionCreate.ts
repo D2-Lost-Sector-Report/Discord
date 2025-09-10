@@ -1,6 +1,5 @@
 import { Events, MessageFlags, Collection, Interaction, Client } from "discord.js";
 import { LostSectorAPI } from "../api/lostsector";
-import { buildSectorComponents, disableSelectMenus } from "../helpers/embed";
 import type { EventHandler } from "./types";
 import { isEmoteCacheLoaded, loadEmoteCacheFromFile } from "../helpers/emotes";
 
