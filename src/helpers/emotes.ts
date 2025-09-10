@@ -19,6 +19,7 @@ const emoteNameMap: Record<string, string> = {
   "hand cannon": "HC",
   "fusion rifle": "FR",
   "trace rifle": "TR",
+  "soloops": "soloops"
 };
 
 // Emotes that are uppercase in main server

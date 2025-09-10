@@ -6,8 +6,8 @@ import * as alert from "./alert";
 
 export const commands = {
   current,
-  upcoming,
-  "next-weapon": nextWeapon,
-  "next-armor": nextArmor,
+  //upcoming,
+  //"next-weapon": nextWeapon,
+  //"next-armor": nextArmor,
   alert,
 };
