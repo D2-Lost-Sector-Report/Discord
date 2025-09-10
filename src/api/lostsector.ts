@@ -175,38 +175,84 @@ export class LostSectorAPI {
    * If before 17:00 UTC, fetch the previous day's sector.
    */
   static async fetchCurrent(): Promise<CombinedData> {
-    // lost sector info
-    const dailyPost = LostSectorAPI.getTodaysSectors();
-    const resolvedDailyPost = await dailyPost;
+    try {
+      // lost sector info
+      const dailyPost = LostSectorAPI.getTodaysSectors();
+      console.log("Fetching today's lost sectors...");
+      const resolvedDailyPost = await dailyPost;
 
-    // solo ops info
-    const dailySoloOps = LostSectorAPI.getTodaysSoloOps();
-    const resolvedDailySoloOps = await dailySoloOps;
+      // solo ops info
+      const dailySoloOps = LostSectorAPI.getTodaysSoloOps();
+      console.log("Fetching today's solo ops...");
+      const resolvedDailySoloOps = await dailySoloOps;
 
-    // smush the two objects together
-    const combinedData: CombinedData = {
-      lostSectors: resolvedDailyPost,
-      soloOps: resolvedDailySoloOps,
-    };
+      // smush the two objects together
+      const combinedData: CombinedData = {
+        lostSectors: resolvedDailyPost,
+        soloOps: resolvedDailySoloOps,
+      };
 
-    return combinedData;
+      console.log("Combined data:", combinedData);
+      return combinedData;
+    } catch (error) {
+      console.error("Error fetching current data:", error);
+      throw new Error(`Failed to fetch current data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   static async getTodaysSectors() {
-    const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    const lostsectorAPI = "https://api.d2lostsector.report";
-    const data = await fetch(lostsectorAPI + "/lostsectors/active/" + today);
-    const lostSectors = (await data.json()) as LostSector[];
-    console.log(lostSectors);
-    return lostSectors;
+    try {
+      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      const lostsectorAPI = "https://api.d2lostsector.report";
+      const url = `${lostsectorAPI}/lostsectors/active/${today}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': USER_AGENT,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const lostSectors = (await response.json()) as LostSector[];
+      console.log("Fetched lost sectors:", lostSectors);
+      return lostSectors;
+    } catch (error) {
+      console.error("Error fetching today's sectors:", error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch lost sectors: ${error.message}`);
+      }
+      throw new Error("Failed to fetch lost sectors: Unknown error");
+    }
   }
 
   static async getTodaysSoloOps() {
-    const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    const lostsectorAPI = "https://api.d2lostsector.report";
-    const data = await fetch(lostsectorAPI + "/soloops/" + today);
-    const soloOps = (await data.json()) as SoloOps;
-    console.log(soloOps);
-    return soloOps;
+    try {
+      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      const lostsectorAPI = "https://api.d2lostsector.report";
+      const url = `${lostsectorAPI}/soloops/${today}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': USER_AGENT,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const soloOps = (await response.json()) as SoloOps;
+      console.log("Fetched solo ops:", soloOps);
+      return soloOps;
+    } catch (error) {
+      console.error("Error fetching today's solo ops:", error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch solo ops: ${error.message}`);
+      }
+      throw new Error("Failed to fetch solo ops: Unknown error");
+    }
   }
 }

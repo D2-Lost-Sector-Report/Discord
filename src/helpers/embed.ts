@@ -14,7 +14,7 @@ import {
   CombinedData,
   getSectorDetailsByID,
 } from "../api/lostsector";
-import { getEmoteString } from "./emotes";
+//import { getEmoteString } from "./emotes";
 
 export function createComponents(dailyPost: CombinedData) {
   const { lostSectors, soloOps } = dailyPost;
@@ -80,7 +80,7 @@ function createSoloOpsContainer(soloOps: any) {
     .setAccentColor(0x800020)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# ${getEmoteString("soloops")} Today's Featured Solo Ops\n\n`
+        `# Today's Featured Solo Ops\n\n`
       )
     )
     .addMediaGalleryComponents(mediaGallery)
@@ -98,7 +98,7 @@ function createOverviewContainer(lostSectors: any[]) {
     .setAccentColor(0x5693f5)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
+        `# Today's World Lost Sectors\n\n` +
           overviewContent +
           `\n\nFor more information, see [D2LostSector.report ↗](https://d2lostsector.report/)`
       )
@@ -110,7 +110,6 @@ function createLostSectorMediaGallery(lostSectors: any[]) {
   const mediaGallery = new MediaGalleryBuilder();
 
   lostSectors.forEach((sector) => {
-    try {
       const sectorDetails = getSectorDetailsByID(
         String(sector.variants.expert.activityId)
       );
@@ -123,12 +122,6 @@ function createLostSectorMediaGallery(lostSectors: any[]) {
           },
         });
       }
-    } catch (error) {
-      console.warn(
-        `Failed to get sector details for ${sector.sectorName}:`,
-        error
-      );
-    }
   });
 
   return mediaGallery;

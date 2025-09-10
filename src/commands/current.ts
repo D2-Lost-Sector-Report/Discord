@@ -15,7 +15,7 @@ export async function execute(interaction: CommandInteraction) {
   try {
     //get lost sectors for today
     const todaysData: CombinedData = await LostSectorAPI.fetchCurrent();
-    const components = createComponents(todaysData);
+    const components = await createComponents(todaysData);
     await interaction.editReply({
       flags: MessageFlags.IsComponentsV2,
       components
