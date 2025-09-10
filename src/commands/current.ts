@@ -15,10 +15,10 @@ export async function execute(interaction: CommandInteraction) {
   try {
     //get lost sectors for today
     const todaysData: CombinedData = await LostSectorAPI.fetchCurrent();
-    const lostSectorComponents = createComponents(todaysData);
+    const components = createComponents(todaysData);
     await interaction.editReply({
       flags: MessageFlags.IsComponentsV2,
-      components: lostSectorComponents,
+      components
     });
   } catch (err) {
     console.error(err);
