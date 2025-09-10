@@ -178,12 +178,10 @@ export class LostSectorAPI {
     try {
       // lost sector info
       const dailyPost = LostSectorAPI.getTodaysSectors();
-      console.log("Fetching today's lost sectors...");
       const resolvedDailyPost = await dailyPost;
 
       // solo ops info
       const dailySoloOps = LostSectorAPI.getTodaysSoloOps();
-      console.log("Fetching today's solo ops...");
       const resolvedDailySoloOps = await dailySoloOps;
 
       // smush the two objects together
@@ -192,7 +190,6 @@ export class LostSectorAPI {
         soloOps: resolvedDailySoloOps,
       };
 
-      console.log("Combined data:", combinedData);
       return combinedData;
     } catch (error) {
       console.error("Error fetching current data:", error);
@@ -217,7 +214,6 @@ export class LostSectorAPI {
       }
 
       const lostSectors = (await response.json()) as LostSector[];
-      console.log("Fetched lost sectors:", lostSectors);
       return lostSectors;
     } catch (error) {
       console.error("Error fetching today's sectors:", error);
@@ -245,7 +241,6 @@ export class LostSectorAPI {
       }
 
       const soloOps = (await response.json()) as SoloOps;
-      console.log("Fetched solo ops:", soloOps);
       return soloOps;
     } catch (error) {
       console.error("Error fetching today's solo ops:", error);

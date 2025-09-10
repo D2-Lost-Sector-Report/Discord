@@ -14,6 +14,7 @@ import {
   CombinedData,
   getSectorDetailsByID,
 } from "../api/lostsector";
+import { getEmoteString } from "./emotes";
 //import { getEmoteString } from "./emotes";
 
 export function createComponents(dailyPost: CombinedData) {
@@ -80,7 +81,7 @@ function createSoloOpsContainer(soloOps: any) {
     .setAccentColor(0x800020)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# Today's Featured Solo Ops\n\n`
+        `# ${getEmoteString("soloops")} Today's Featured Solo Ops\n\n`
       )
     )
     .addMediaGalleryComponents(mediaGallery)
@@ -98,7 +99,7 @@ function createOverviewContainer(lostSectors: any[]) {
     .setAccentColor(0x5693f5)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# Today's World Lost Sectors\n\n` +
+        `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
           overviewContent +
           `\n\nFor more information, see [D2LostSector.report ↗](https://d2lostsector.report/)`
       )
