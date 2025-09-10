@@ -13,8 +13,6 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: CommandInteraction) {
   await interaction.deferReply();
   try {
-    console.log("Fetching current lost sectors...");
-
     //get lost sectors for today
     const todaysData: CombinedData = await LostSectorAPI.fetchCurrent();
     const lostSectorComponents = createComponents(todaysData);
