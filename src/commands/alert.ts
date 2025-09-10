@@ -133,10 +133,10 @@ export async function execute(interaction: CommandInteraction) {
     // Post current Lost Sector info
     try {
       const todaysData: CombinedData = await LostSectorAPI.fetchCurrent();
-      const lostSectorComponents = createComponents(todaysData);
-      await interaction.editReply({
+      const components = createComponents(todaysData);
+      await channel.send({
         flags: MessageFlags.IsComponentsV2,
-        components: lostSectorComponents,
+        components,
       });
     } catch (err: any) {
       console.error(err);

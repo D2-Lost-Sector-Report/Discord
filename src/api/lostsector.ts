@@ -197,6 +197,7 @@ export class LostSectorAPI {
     const lostsectorAPI = "https://api.d2lostsector.report";
     const data = await fetch(lostsectorAPI + "/lostsectors/active/" + today);
     const lostSectors = (await data.json()) as LostSector[];
+    console.log(lostSectors);
     return lostSectors;
   }
 
@@ -205,6 +206,7 @@ export class LostSectorAPI {
     const lostsectorAPI = "https://api.d2lostsector.report";
     const data = await fetch(lostsectorAPI + "/soloops/" + today);
     const soloOps = (await data.json()) as SoloOps;
+    console.log(soloOps);
     return soloOps;
   }
 }

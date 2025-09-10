@@ -14,15 +14,30 @@ import {
   CombinedData,
   getSectorDetailsByID,
 } from "../api/lostsector";
-
 import { getEmoteString } from "./emotes";
 
 export function createComponents(dailyPost: CombinedData) {
   const { lostSectors, soloOps } = dailyPost;
 
-  ////////////////////////////////////////////////////////////////////////
-  // Create the header container
-  const headerContainer = new SectionBuilder()
+  validateData(lostSectors);
+
+  return [
+    createHeaderContainer(),
+    createSoloOpsContainer(soloOps),
+    createOverviewContainer(lostSectors),
+    createFooterContainer(),
+    createCreditsComponent(),
+  ];
+}
+
+function validateData(lostSectors: any[]) {
+  if (!lostSectors || lostSectors.length === 0) {
+    throw new Error("No lost sector data available");
+  }
+}
+
+function createHeaderContainer() {
+  return new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(`-# Active now`)
     )
@@ -32,133 +47,126 @@ export function createComponents(dailyPost: CombinedData) {
         .setStyle(ButtonStyle.Link)
         .setURL("https://d2lostsector.report/")
     );
+}
 
-  ////////////////////////////////////////////////////////////////////////
-  // Create overview content
-  const overviewContent = lostSectors
-    .map((sector) => {
-      return `**${sector.sectorName}**\n-# ${sector.planetName}\n`;
-    })
-    .join("\n");
+function createSoloOpsContainer(soloOps: any) {
+  const featuredSoloOp = soloOps?.individualActivities?.[0];
 
-  // Create media gallery with all sector images
-  const mediaGallery = new MediaGalleryBuilder();
+  if (!featuredSoloOp) {
+    return createEmptyContainer("No Solo Ops data available");
+  }
 
-  lostSectors.forEach((sector) => {
-    const [sectorId] = getSectorDetailsByID(
-      String(sector.variants.expert.activityId)
-    );
-    mediaGallery.addItems({
-      media: {
-        url:
-          cfWebsiteAssetPath + sectorId + "/" + sectorId + ".jpg?" + cfParams,
-      },
-    });
-  });
-
-  const overviewContainer = new ContainerBuilder()
-    .setAccentColor(0x5693f5)
+  const soloOpsFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
-          overviewContent +
-          `\n` +
-          `For more information, see [D2LostSector.report ↗](https://d2lostsector.report/)`
+        `## ${featuredSoloOp.name}\n**Bonus Focus:**\n${featuredSoloOp.focusDrop?.name ?? "N/A"}`
       )
     )
-    .addMediaGalleryComponents(mediaGallery);
-
-  ////////////////////////////////////////////////////////////////////////
-  // Footer buttons
-  const footerContainer = new ActionRowBuilder<ButtonBuilder>()
-    .addComponents(
-      new ButtonBuilder()
-        .setLabel("Calendar")
-        .setStyle(ButtonStyle.Link)
-        .setURL("https://d2lostsector.report/calendar/")
-    )
-    .addComponents(
-      new ButtonBuilder()
-        .setLabel("Leaderboards")
-        .setStyle(ButtonStyle.Link)
-        .setURL("https://d2lostsector.report/leaderboards")
-    )
-    .addComponents(
-      new ButtonBuilder()
-        .setLabel("Solo Ops")
-        .setStyle(ButtonStyle.Link)
-        .setURL("https://d2lostsector.report/solo-ops/")
-    )
-    .addComponents(
-      new ButtonBuilder()
-        .setLabel("Support us on Ko-fi")
-        .setStyle(ButtonStyle.Link)
-        .setURL("https://ko-fi.com/d2lostsector")
+    .setThumbnailAccessory(
+      new ThumbnailBuilder({
+        media: {
+          url: "https://www.bungie.net" + (featuredSoloOp.focusDrop?.icon || ""),
+        },
+      })
     );
 
-  const credits = new TextDisplayBuilder().setContent(
-    `-# D2LostSector Discord Bot v${process.env.npm_package_version}`
-  );
-
-  const soloOpsFocusComponents: SectionBuilder[] = [];
-  soloOpsFocusComponents.push(
-    new SectionBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          `## ${soloOps.individualActivities[0]?.name}\n**Bonus Focus:**\n${soloOps.individualActivities[0]?.focusDrop?.name ?? "N/A"}`
-        )
-      )
-      .setThumbnailAccessory(
-        new ThumbnailBuilder({
-          media: {
-            url:
-              "https://www.bungie.net" +
-              soloOps.individualActivities[0]?.focusDrop?.icon,
-          },
-        })
-      ),
-
-    new SectionBuilder()
-      .addTextDisplayComponents(
-        new TextDisplayBuilder().setContent(
-          `## Quickplay\n**Bonus Focus:**\n${soloOps.quickplayFocusDrop.name}`
-        )
-      )
-      .setThumbnailAccessory(
-        new ThumbnailBuilder({
-          media: {
-            url: "https://www.bungie.net" + soloOps.quickplayFocusDrop.icon,
-          },
-        })
-      )
-  );
-
-  const featuredSoloOpsMedia = [
-    {
-      media: {
-        url:
-          "https://www.bungie.net" + soloOps.individualActivities[0]?.pgcrImage,
-      },
+  const mediaGallery = new MediaGalleryBuilder().addItems({
+    media: {
+      url: "https://www.bungie.net" + (featuredSoloOp.pgcrImage || ""),
     },
-  ];
+  });
 
-  const soloOpsContainer = new ContainerBuilder()
+  return new ContainerBuilder()
     .setAccentColor(0x800020)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
         `# ${getEmoteString("soloops")} Today's Featured Solo Ops\n\n`
       )
     )
-    .addMediaGalleryComponents(
-      new MediaGalleryBuilder().addItems(featuredSoloOpsMedia)
-    )
-    .addSectionComponents(...soloOpsFocusComponents);
+    .addMediaGalleryComponents(mediaGallery)
+    .addSectionComponents(soloOpsFocusSection);
+}
 
-  return [
-    headerContainer,
-    soloOpsContainer,
-    overviewContainer,
-    footerContainer,
-    credits,
+function createOverviewContainer(lostSectors: any[]) {
+  const overviewContent = lostSectors
+    .map((sector) => `**${sector.sectorName}**\n-# ${sector.planetName}\n`)
+    .join("\n");
+
+  const mediaGallery = createLostSectorMediaGallery(lostSectors);
+
+  return new ContainerBuilder()
+    .setAccentColor(0x5693f5)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
+          overviewContent +
+          `\n\nFor more information, see [D2LostSector.report ↗](https://d2lostsector.report/)`
+      )
+    )
+    .addMediaGalleryComponents(mediaGallery);
+}
+
+function createLostSectorMediaGallery(lostSectors: any[]) {
+  const mediaGallery = new MediaGalleryBuilder();
+
+  lostSectors.forEach((sector) => {
+    try {
+      const sectorDetails = getSectorDetailsByID(
+        String(sector.variants.expert.activityId)
+      );
+
+      if (sectorDetails && sectorDetails[0]) {
+        const [sectorId] = sectorDetails;
+        mediaGallery.addItems({
+          media: {
+            url: `${cfWebsiteAssetPath}${sectorId}/${sectorId}.jpg?${cfParams}`,
+          },
+        });
+      }
+    } catch (error) {
+      console.warn(
+        `Failed to get sector details for ${sector.sectorName}:`,
+        error
+      );
+    }
+  });
+
+  return mediaGallery;
+}
+
+function createFooterContainer() {
+  const buttons = [
+    { label: "Calendar", url: "https://d2lostsector.report/calendar/" },
+    { label: "Leaderboards", url: "https://d2lostsector.report/leaderboards" },
+    { label: "Solo Ops", url: "https://d2lostsector.report/solo-ops/" },
+    { label: "Support us on Ko-fi", url: "https://ko-fi.com/d2lostsector" },
   ];
+
+  const actionRow = new ActionRowBuilder<ButtonBuilder>();
+
+  buttons.forEach(({ label, url }) => {
+    actionRow.addComponents(
+      new ButtonBuilder()
+        .setLabel(label)
+        .setStyle(ButtonStyle.Link)
+        .setURL(url)
+    );
+  });
+
+  return actionRow;
+}
+
+function createCreditsComponent() {
+  const version = process.env.npm_package_version || "Unknown";
+  return new TextDisplayBuilder().setContent(
+    `-# D2LostSector Discord Bot v${version}`
+  );
+}
+
+function createEmptyContainer(message: string) {
+  return new ContainerBuilder()
+    .setAccentColor(0x808080)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(`# ${message}`)
+    );
 }
