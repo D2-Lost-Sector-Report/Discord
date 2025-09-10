@@ -151,9 +151,8 @@ function createFooterContainer() {
 }
 
 function createCreditsComponent() {
-  const version = process.env.npm_package_version || "Unknown";
   return new TextDisplayBuilder().setContent(
-    `-# D2LostSector Discord Bot v${version}`
+    `-# D2LostSector Discord Bot`
   );
 }
 
