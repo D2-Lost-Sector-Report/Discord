@@ -66,7 +66,21 @@ function createSoloOpsContainer(soloOps: any) {
     .setThumbnailAccessory(
       new ThumbnailBuilder({
         media: {
-          url: "https://www.bungie.net" + (featuredSoloOp.focusDrop?.icon || ""),
+          url:
+            "https://www.bungie.net" + (featuredSoloOp.focusDrop?.icon || ""),
+        },
+      })
+    );
+  const quickPlayFocusSection = new SectionBuilder()
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        `## Quickplay\n**Bonus Focus:**\n${soloOps.quickplayFocusDrop.name}`
+      )
+    )
+    .setThumbnailAccessory(
+      new ThumbnailBuilder({
+        media: {
+          url: "https://www.bungie.net" + soloOps.quickplayFocusDrop.icon,
         },
       })
     );
@@ -85,7 +99,7 @@ function createSoloOpsContainer(soloOps: any) {
       )
     )
     .addMediaGalleryComponents(mediaGallery)
-    .addSectionComponents(soloOpsFocusSection);
+    .addSectionComponents(soloOpsFocusSection, quickPlayFocusSection);
 }
 
 function createOverviewContainer(lostSectors: any[]) {
@@ -111,18 +125,18 @@ function createLostSectorMediaGallery(lostSectors: any[]) {
   const mediaGallery = new MediaGalleryBuilder();
 
   lostSectors.forEach((sector) => {
-      const sectorDetails = getSectorDetailsByID(
-        String(sector.variants.expert.activityId)
-      );
+    const sectorDetails = getSectorDetailsByID(
+      String(sector.variants.expert.activityId)
+    );
 
-      if (sectorDetails && sectorDetails[0]) {
-        const [sectorId] = sectorDetails;
-        mediaGallery.addItems({
-          media: {
-            url: `${cfWebsiteAssetPath}${sectorId}/${sectorId}.jpg?${cfParams}`,
-          },
-        });
-      }
+    if (sectorDetails && sectorDetails[0]) {
+      const [sectorId] = sectorDetails;
+      mediaGallery.addItems({
+        media: {
+          url: `${cfWebsiteAssetPath}${sectorId}/${sectorId}.jpg?${cfParams}`,
+        },
+      });
+    }
   });
 
   return mediaGallery;
@@ -140,10 +154,7 @@ function createFooterContainer() {
 
   buttons.forEach(({ label, url }) => {
     actionRow.addComponents(
-      new ButtonBuilder()
-        .setLabel(label)
-        .setStyle(ButtonStyle.Link)
-        .setURL(url)
+      new ButtonBuilder().setLabel(label).setStyle(ButtonStyle.Link).setURL(url)
     );
   });
 
@@ -151,9 +162,7 @@ function createFooterContainer() {
 }
 
 function createCreditsComponent() {
-  return new TextDisplayBuilder().setContent(
-    `-# D2LostSector Discord Bot`
-  );
+  return new TextDisplayBuilder().setContent(`-# D2LostSector Discord Bot`);
 }
 
 function createEmptyContainer(message: string) {
