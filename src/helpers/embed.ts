@@ -85,9 +85,15 @@ function createSoloOpsContainer(soloOps: any) {
       })
     );
 
+  let mediaUrl = featuredSoloOp.pgcrImage || "";
+  //if the first 4 characters of mediaurl are not "https", then we need to prefix it
+  if (mediaUrl && !mediaUrl.startsWith("https")) {
+    mediaUrl = "https://www.bungie.net" + mediaUrl;
+  }
+
   const mediaGallery = new MediaGalleryBuilder().addItems({
     media: {
-      url: "https://www.bungie.net" + (featuredSoloOp.pgcrImage || ""),
+      url: mediaUrl,
     },
   });
 
