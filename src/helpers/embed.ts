@@ -74,7 +74,7 @@ function createSoloOpsContainer(soloOps: any) {
   const quickPlayFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## Quickplay\n**Bonus Focus:**\n${soloOps.quickplayFocusDrop.name}`
+        `## Quickplay Normal & Master\n**Bonus Focus:**\n${soloOps.quickplayFocusDrop.name}`
       )
     )
     .setThumbnailAccessory(
