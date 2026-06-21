@@ -9,7 +9,7 @@ const handler: EventHandler<"guildDelete"> = {
     let totalGuilds: number;
     if (client.shard) {
       const results = await client.shard.broadcastEval(
-        (client) => client.guilds.cache.size
+        () => { return this.guilds.cache.size; }
       );
       totalGuilds = results.reduce((acc, count) => acc + count, 0);
     } else {
@@ -20,6 +20,7 @@ const handler: EventHandler<"guildDelete"> = {
       `🙁 Left server ${guild.name} (Total servers: ${totalGuilds})`
     );
   },
+  guilds: undefined
 };
 
 export default handler;
