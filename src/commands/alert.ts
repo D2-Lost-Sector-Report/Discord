@@ -83,10 +83,19 @@ export async function execute(interaction: CommandInteraction) {
       await interaction.editReply("Could not find the main server.");
       return;
     }
-    await guild.channels.fetch();
-    const announcementChannel = guild.channels.cache.get(
-      config.ANNOUNCEMENT_CHANNEL_ID!
-    );
+    // Fetch only the announcement channel to avoid populating the entire
+    // guild channels cache (reduces memory usage when in many guilds).
+    let announcementChannel = null as any;
+    try {
+      announcementChannel = await guild.channels.fetch(
+        config.ANNOUNCEMENT_CHANNEL_ID!
+      );
+    } catch {
+      // fallback to cache if fetch fails for some reason
+      announcementChannel = guild.channels.cache.get(
+        config.ANNOUNCEMENT_CHANNEL_ID!
+      );
+    }
     if (
       !announcementChannel ||
       announcementChannel.type !== ChannelType.GuildAnnouncement
