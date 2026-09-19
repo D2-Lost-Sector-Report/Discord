@@ -12,6 +12,12 @@ const handler: EventHandler<"ready"> = {
     if (guild) {
       await guild.emojis.fetch();
       await writeEmoteCacheToFile(guild.emojis.cache);
+      // Clear the guild emoji cache after persisting to disk to free memory
+      try {
+        guild.emojis.cache.clear();
+      } catch (err) {
+        console.warn("Failed to clear emoji cache:", err);
+      }
     }
   },
 };
