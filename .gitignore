@@ -135,5 +135,3 @@ dist
 .env
 .env.prod
 .env.dev
-
-emotes.json

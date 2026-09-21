@@ -1,13 +1,12 @@
 import { Events, Collection, Interaction, Client } from "discord.js";
 import type { EventHandler } from "./types";
-import { isEmoteCacheLoaded, loadEmoteCacheFromFile } from "../helpers/emotes";
 
 const handler: EventHandler<"interactionCreate"> = {
   name: Events.InteractionCreate,
   async execute(interaction: Interaction, _client: Client, commands?: Collection<string, any>) {
     if (!commands) return;
 
-    if (!isEmoteCacheLoaded()) await loadEmoteCacheFromFile();
+    // Emote cache loading removed — emotes are no longer used at runtime.
     if (interaction.isChatInputCommand()) {
       const { commandName } = interaction;
       const command = commands.get(commandName);

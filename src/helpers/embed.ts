@@ -14,8 +14,31 @@ import {
   CombinedData,
   getSectorDetailsByID,
 } from "../api/lostsector";
-import { getEmoteString } from "./emotes";
-//import { getEmoteString } from "./emotes";
+
+// Decoupled from emotes: use plain titles and a small local weapon-type detector
+const weaponKeywords = [
+  "sword",
+  "scout rifle",
+  "rocket launcher",
+  "grenade launcher",
+  "glaive",
+  "sidearm",
+  "assault rifle",
+  "pulse rifle",
+  "sniper rifle",
+  "shotgun",
+  "machine gun",
+  "submachine gun",
+  "hand cannon",
+  "fusion rifle",
+  "trace rifle",
+];
+
+function isWeaponTypeLocal(name: string | undefined | null): boolean {
+  if (!name) return false;
+  const nameLower = name.toLowerCase();
+  return weaponKeywords.some((k) => nameLower.includes(k));
+}
 
 export function createComponents(dailyPost: CombinedData) {
   const { lostSectors, soloOps } = dailyPost;
@@ -57,30 +80,47 @@ function createSoloOpsContainer(soloOps: any) {
     return createEmptyContainer("No Solo Ops data available");
   }
 
+  // Render focus drops: weapons should be links to destiny.report; armor should be plain text
+  const featuredFocusName = featuredSoloOp.focusDrop?.name ?? "N/A";
+  const featuredFocusHash = featuredSoloOp.focusDrop?.hash || "";
+  const featuredFocusIcon = featuredSoloOp.focusDrop?.icon || "";
+  const featuredFocusDisplay =
+    isWeaponTypeLocal(featuredFocusName) && featuredFocusHash
+      ? `[${featuredFocusName}](https://destiny.report/w/${featuredFocusHash})`
+      : `${featuredFocusName}`;
+
   const soloOpsFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## ${featuredSoloOp.name}\n**Bonus Focus:**\n[${featuredSoloOp.focusDrop?.name ?? "N/A"}](https://destiny.report/w/${featuredSoloOp.focusDrop?.hash || ""})`
+        `## ${featuredSoloOp.name}\n**Bonus Focus:**\n${featuredFocusDisplay}`
       )
     )
     .setThumbnailAccessory(
       new ThumbnailBuilder({
         media: {
-          url:
-            "https://www.bungie.net" + (featuredSoloOp.focusDrop?.icon || ""),
+          url: "https://www.bungie.net" + featuredFocusIcon,
         },
       })
     );
+
+  const quickName = soloOps.quickplayFocusDrop?.name ?? "N/A";
+  const quickHash = soloOps.quickplayFocusDrop?.hash || "";
+  const quickIcon = soloOps.quickplayFocusDrop?.icon || "";
+  const quickDisplay =
+    isWeaponTypeLocal(quickName) && quickHash
+      ? `[${quickName}](https://destiny.report/w/${quickHash})`
+      : `${quickName}`;
+
   const quickPlayFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## Quickplay Normal & Master\n**Bonus Focus:**\n[${soloOps.quickplayFocusDrop.name}](https://destiny.report/w/${soloOps.quickplayFocusDrop.hash || ""})`
+        `## Quickplay Normal & Master\n**Bonus Focus:**\n${quickDisplay}`
       )
     )
     .setThumbnailAccessory(
       new ThumbnailBuilder({
         media: {
-          url: "https://www.bungie.net" + soloOps.quickplayFocusDrop.icon,
+          url: "https://www.bungie.net" + quickIcon,
         },
       })
     );
@@ -101,7 +141,7 @@ function createSoloOpsContainer(soloOps: any) {
     .setAccentColor(0x800020)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# ${getEmoteString("soloops")} Today's Featured Solo Ops\n\n`
+        `# Solo Ops — Today's Featured Solo Ops\n\n`
       )
     )
     .addMediaGalleryComponents(mediaGallery)
@@ -119,7 +159,7 @@ function createOverviewContainer(lostSectors: any[]) {
     .setAccentColor(0x5693f5)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
+        `# Lost Sectors — Today's World Lost Sectors\n\n` +
           overviewContent +
           `\n\nFor more information, see [D2LostSector.report](https://d2lostsector.report/)`
       )
