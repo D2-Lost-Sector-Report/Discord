@@ -17,6 +17,7 @@ export interface CombinedData {
 
 export interface LostSector {
   sectorId: string;
+  escapedname: string;
   sectorName: string;
   planetName: string;
   threat: string;

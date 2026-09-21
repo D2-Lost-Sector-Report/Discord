@@ -24,8 +24,8 @@ export function createComponents(dailyPost: CombinedData) {
 
   return [
     createHeaderContainer(),
-    createSoloOpsContainer(soloOps),
     createOverviewContainer(lostSectors),
+    createSoloOpsContainer(soloOps),
     createFooterContainer(),
     createCreditsComponent(),
   ];
@@ -60,7 +60,7 @@ function createSoloOpsContainer(soloOps: any) {
   const soloOpsFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## ${featuredSoloOp.name}\n**Bonus Focus:**\n${featuredSoloOp.focusDrop?.name ?? "N/A"}`
+        `## ${featuredSoloOp.name}\n**Bonus Focus:**\n[${featuredSoloOp.focusDrop?.name ?? "N/A"}](https://destiny.report/w/${featuredSoloOp.focusDrop?.hash || ""})`
       )
     )
     .setThumbnailAccessory(
@@ -74,7 +74,7 @@ function createSoloOpsContainer(soloOps: any) {
   const quickPlayFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## Quickplay Normal & Master\n**Bonus Focus:**\n${soloOps.quickplayFocusDrop.name}`
+        `## Quickplay Normal & Master\n**Bonus Focus:**\n[${soloOps.quickplayFocusDrop.name}](https://destiny.report/w/${soloOps.quickplayFocusDrop.hash || ""})`
       )
     )
     .setThumbnailAccessory(
@@ -110,7 +110,7 @@ function createSoloOpsContainer(soloOps: any) {
 
 function createOverviewContainer(lostSectors: any[]) {
   const overviewContent = lostSectors
-    .map((sector) => `**${sector.sectorName}**\n-# ${sector.planetName}\n`)
+    .map((sector) => `**[${sector.sectorName}](https://d2lostsector.report/sector/${sector.escapedname})**\n-# ${sector.planetName}\n`)
     .join("\n");
 
   const mediaGallery = createLostSectorMediaGallery(lostSectors);
@@ -121,7 +121,7 @@ function createOverviewContainer(lostSectors: any[]) {
       new TextDisplayBuilder().setContent(
         `# ${getEmoteString("lostsector")} Today's World Lost Sectors\n\n` +
           overviewContent +
-          `\n\nFor more information, see [D2LostSector.report ↗](https://d2lostsector.report/)`
+          `\n\nFor more information, see [D2LostSector.report](https://d2lostsector.report/)`
       )
     )
     .addMediaGalleryComponents(mediaGallery);
