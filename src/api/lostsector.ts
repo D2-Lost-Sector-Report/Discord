@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { getCurrentDay } from "../helpers/time";
 
 const USER_AGENT =
   "D2LS-Discord/1.0 (+https://github.com/D2-Lost-Sector-Report/Discord)";
@@ -171,19 +172,13 @@ export function getSectorDetailsByID(id: string) {
 }
 
 export class LostSectorAPI {
-  /**
-   * Get the currently active lost sector, using UTC time.
-   * If before 17:00 UTC, fetch the previous day's sector.
-   */
   static async fetchCurrent(): Promise<CombinedData> {
     try {
       // lost sector info
-      const dailyPost = LostSectorAPI.getTodaysSectors();
-      const resolvedDailyPost = await dailyPost;
+      const resolvedDailyPost = await LostSectorAPI.getTodaysSectors();
 
       // solo ops info
-      const dailySoloOps = LostSectorAPI.getTodaysSoloOps();
-      const resolvedDailySoloOps = await dailySoloOps;
+      const resolvedDailySoloOps = await LostSectorAPI.getTodaysSoloOps();
 
       // smush the two objects together
       const combinedData: CombinedData = {
@@ -200,9 +195,8 @@ export class LostSectorAPI {
 
   static async getTodaysSectors() {
     try {
-      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
       const lostsectorAPI = "https://api.d2lostsector.report";
-      const url = `${lostsectorAPI}/lostsectors/active/${today}`;
+      const url = `${lostsectorAPI}/lostsectors/active/${getCurrentDay()}`;
       
       const response = await fetch(url, {
         headers: {
@@ -227,9 +221,8 @@ export class LostSectorAPI {
 
   static async getTodaysSoloOps() {
     try {
-      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
       const lostsectorAPI = "https://api.d2lostsector.report";
-      const url = `${lostsectorAPI}/soloops/${today}`;
+      const url = `${lostsectorAPI}/soloops/${getCurrentDay()}`;
       
       const response = await fetch(url, {
         headers: {
