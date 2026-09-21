@@ -141,7 +141,7 @@ function createSoloOpsContainer(soloOps: any) {
     .setAccentColor(0x800020)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# Solo Ops — Today's Featured Solo Ops\n\n`
+        `# Today's Featured Solo Ops\n\n`
       )
     )
     .addMediaGalleryComponents(mediaGallery)
@@ -159,7 +159,7 @@ function createOverviewContainer(lostSectors: any[]) {
     .setAccentColor(0x5693f5)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `# Lost Sectors — Today's World Lost Sectors\n\n` +
+        `# Today's World Lost Sectors\n\n` +
           overviewContent +
           `\n\nFor more information, see [D2LostSector.report](https://d2lostsector.report/)`
       )
