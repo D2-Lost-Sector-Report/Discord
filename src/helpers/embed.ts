@@ -87,7 +87,7 @@ function createSoloOpsContainer(soloOps: any) {
   const featuredFocusDisplay =
     isWeaponTypeLocal(featuredFocusName) && featuredFocusHash
       ? `[${featuredFocusName}](https://destiny.report/w/${featuredFocusHash})`
-      : `${featuredFocusName}`;
+      : `[${featuredFocusName}](https://www.light.gg/db/items/${featuredFocusHash})`;
 
   const soloOpsFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
@@ -109,7 +109,7 @@ function createSoloOpsContainer(soloOps: any) {
   const quickDisplay =
     isWeaponTypeLocal(quickName) && quickHash
       ? `[${quickName}](https://destiny.report/w/${quickHash})`
-      : `${quickName}`;
+      : `[${quickName}](https://www.light.gg/db/items/${quickHash})`;
 
   const quickPlayFocusSection = new SectionBuilder()
     .addTextDisplayComponents(
